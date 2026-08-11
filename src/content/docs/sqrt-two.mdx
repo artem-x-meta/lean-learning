@@ -1,0 +1,122 @@
+---
+title: '1.9 Irrationality of √2'
+description: The capstone of the course — a proof by contradiction in full, broken into the steps that on paper are covered by a few words.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="55–65 min" level="Base" prerequisites="the whole course: connectives, quantifiers, ring, omega, induction" />
+
+The last one. Irrationality of $\sqrt{2}$ is the proof people usually formalise first, and for good reason: it is short, everyone knows it, and unlike most short arguments it is made of genuine steps rather than a computation.
+
+Along the way there is a technique worth carrying off with you: **the division of labour between tactics**. Everything non-linear goes to `ring`, and then `omega` works with $m^2$ and $k^2$ as if they were ordinary unknowns. Hardly anything is left to do by hand.
+
+<LearningGoals items={[
+  'prove an auxiliary parity lemma by case analysis',
+  'carry a proof by contradiction through in full, skipping nothing',
+  'see how ring and omega split the work between them',
+  'find ready-made facts in Mathlib and know when to reach for them',
+]} />
+
+## The parity lemma
+
+The school proof leans on something that is normally said in passing: if $m^2$ is even then $m$ is even. Here it has to be said in full.
+
+<LeanSnippet file="DiveLean/Ch09/SqrtTwo.lean" region="parity-lemma" title="An even square comes from an even number" />
+
+Case analysis: a number is either even or odd. In the first case there is nothing to prove. In the second we write $m = 2k+1$, expand the square with `ring` and land on $2(\ldots)+1$ — odd beyond argument, which contradicts the hypothesis.
+
+Look at how the roles are divided. `ring` does the one non-linear thing in sight: it turns $(2k+1)^2$ into $2(2k^2+2k)+1$. Everything after that is `omega`'s.
+
+<Concept type="remember" title="What omega actually sees">
+  `omega` decides **linear** arithmetic over `Nat` and `Int`: addition, subtraction, multiplication by numerals, `/` and `%` by numerals, comparisons. It knows nothing about `^`. What saves the day is that it does not choke on what it does not know — an unrecognised term like `k ^ 2` simply becomes an opaque unknown, one atom with no internal structure.
+
+  So the pattern is: use `ring` (or `nlinarith`, or a `calc` block) to bring the statement into a shape that is **linear in whatever compound terms remain**, then let `omega` finish. It works far beyond this chapter, and it is usually cheaper than doing the arithmetic by hand.
+</Concept>
+
+## The main statement
+
+Now the proof itself, stated the way school states it: there is no fraction in lowest terms whose square is two.
+
+<LeanSnippet file="DiveLean/Ch09/SqrtTwo.lean" region="no-fraction" title="No fraction in lowest terms squares to two" />
+
+Walk through it — the steps are the ones you already know.
+
+1. Suppose the opposite: $m^2 = 2n^2$.
+2. Then $m^2$ is even, so by the lemma $m$ is even too. Write $m = 2k$.
+3. Substitute: $4k^2 = 2n^2$, cancel the two, and you get $n^2 = 2k^2$.
+4. Now it is $n^2$ that is even, and therefore $n$.
+5. Both numbers are divisible by two, so two divides their greatest common divisor. But for a fraction in lowest terms that divisor is one. Contradiction.
+
+Notice that `omega` is doing the same trick three times over. In `hn_sq` it holds two facts — $m^2 = 2n^2$ and $m^2 = 4k^2$ — and three atoms it cannot look inside, `m ^ 2`, `n ^ 2` and `k ^ 2`. That is enough: as a linear problem in those three unknowns it is trivial. The last `omega` is even blunter — from `2 ∣ 1` anything follows.
+
+<Concept type="idea" title="What formalising buys you">
+  On paper step 3 is written "cancel the two" and you move on. Here it had to be said out loud, and it turned out to be two things: first `ring` turns $(2k)^2$ into $4k^2$, and only then does `omega` conclude that $n^2 = 2k^2$. Neither part is hard — but until you write it down you do not notice that there are two of them and not one.
+</Concept>
+
+<Concept type="mistake" title="A condition that was not needed">
+  The school statement usually carries "where $n \ne 0$" — a denominator cannot be zero, after all. Formalising showed that the condition is not needed. The only number coprime to zero is one, so $n = 0$ forces $m = 1$, and that case falls over by itself. The linter noticed an unused hypothesis, and it came out of the statement.
+
+  Worth making a habit of. If a condition never got used, look at it again: either the proof is quietly missing something, or the statement was carrying dead weight.
+</Concept>
+
+## The same fact in Mathlib
+
+Everything above is an exercise. In real work nobody proves this again — the library has it, and in general form straight away, for the square root of any prime.
+
+<LeanSnippet file="DiveLean/Ch09/SqrtTwo.lean" region="mathlib-version" title="Ready-made facts" />
+
+And a small thing that catches people out: to claim $(\sqrt{2})^2 = 2$ you need a proof that the radicand is non-negative. The equality is not true for an arbitrary argument — `Real.sqrt` of a negative number is zero, and zero squared is not what you started with.
+
+<LeanSnippet file="DiveLean/Ch09/SqrtTwo.lean" region="sqrt-two-squared" title="The square of a square root" />
+
+<QuickCheck
+  client:visible
+  id="lean-sqrt-two-key-step"
+  question="Which step is the one that makes this a proof by contradiction rather than a direct proof?"
+  correctIndex={2}
+  options={[
+    { label: 'The parity lemma about squares', explanation: 'It is auxiliary, and it stands on its own — case analysis, nothing indirect about it.' },
+    { label: 'Substituting m = 2k and cancelling the two', explanation: 'That is the technical middle of the argument, and it looks the same however the proof is arranged.' },
+    { label: 'Assuming a fraction in lowest terms exists and deriving a contradiction with it being in lowest terms', explanation: 'Correct: we assume the negation of what we want to prove and arrive at a fraction that is in lowest terms and reducible at the same time.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `even_of_even_sq` yourself, without looking above.
+2. Prove that if $m^2$ is divisible by three then so is $m$. How does this proof differ from the one for two?
+3. Prove `example : Irrational (Real.sqrt 5)` using Mathlib.
+4. Explain why the same argument does not go through for $\sqrt{4}$ — at which step does it break?
+5. Prove `example : Real.sqrt 9 = 3`.
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. Same shape: `rcases Nat.even_or_odd m`, then in the odd case `ring` expands the square and `omega` finishes the job.
+  2. For three the case analysis is longer: three remainders instead of two ($3k$, $3k+1$, $3k+2$), and each square has to be worked out. Same idea, more work — which is exactly why Mathlib states the theorem once, for an arbitrary prime.
+  3. `(by norm_num : Nat.Prime 5).irrational_sqrt`.
+  4. It breaks at the very first step. For four the claim "if $m^2$ is divisible by 4 then $m$ is divisible by 4" is simply false: $m = 2$ gives $m^2 = 4$. That is why the theorem is stated for **primes**. For composite numbers that transition fails, and it is not an incidental detail — it is the whole engine of the proof.
+  5. `by rw [show (9 : ℝ) = 3 ^ 2 by norm_num, Real.sqrt_sq (by norm_num : (0:ℝ) ≤ 3)]`.
+
+</details>
+
+## Summary
+
+- A proof by contradiction in Lean looks exactly like the paper one: `intro` on the negation of the goal, then work towards `False`.
+- Auxiliary lemmas have to be named and proved separately — "obviously" is not available here.
+- A good division of labour: `ring` takes the non-linear rewriting, `omega` draws the linear conclusions about whatever came out of it.
+- `omega` treats terms it does not understand as atoms. That is a feature, and it is what makes the pattern above work.
+- An unused hypothesis is a reason to check whether the statement needs it at all.
+- A teaching proof and working code are different things: Mathlib has the fact already, and on a real problem you take it.
+
+## Where to go next
+
+The course ends here. Lean does not. The natural next steps: [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/) — the large official textbook, [the Natural Number Game](https://adam.math.hhu.de/) — a game in which the whole of arithmetic is built from nothing, and [the community Zulip](https://leanprover.zulipchat.com/), where beginners' questions get friendly and fast answers.
+
+<LessonComplete client:visible lessonId="lean-sqrt-two" />

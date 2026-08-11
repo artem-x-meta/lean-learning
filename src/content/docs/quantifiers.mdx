@@ -1,0 +1,126 @@
+---
+title: '1.3 Quantifiers'
+description: Universal statements as functions, existence as a witness produced on demand, and refutation by counterexample.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="connectives, intro and exact, case analysis with cases" />
+
+So far the statements have been whole: $A$, $B$, “$A$ and $B$”. Real mathematics starts where a statement depends on an object: "for every number…", "there is a number such that…".
+
+The good news is that nothing genuinely new arrives. `∀` turns out to be a function you have already met, and `∃` turns out to be the same pair as conjunction, with a number in place of the first half.
+
+<LearningGoals items={[
+  'prove a universal statement with intro, and use a finished one by applying it',
+  'prove an existence statement by producing a witness',
+  'get hold of a witness, and see why you cannot look at it',
+  'refute a universal statement with a single counterexample',
+]} />
+
+## "For every" is a function again
+
+What does it mean to prove "for every $n$, $P(n)$ holds"? It means being able to hand back a proof for whatever number you are given. That is a **function from a number to a proof**.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="forall-is-function" title="Every number equals itself" />
+
+Here `Eq.refl n` is `rfl` written out in full, with the thing it applies to spelled in. You would normally write just `rfl`, but this way you can see that the argument really is used.
+
+The tactic is the one you already know from implication — not a coincidence, but a consequence of both being functions.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="forall-tactic" title="intro works here too" />
+
+`intro n` says: "take an arbitrary $n$, and assume nothing further about it". It is that arbitrariness which makes the conclusion universal.
+
+Using a universal statement is easy — apply it to the value you care about.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="forall-apply" title="Applied to a particular number" />
+
+## "There exists" means produce a witness
+
+To prove an existence statement it is not enough to argue that there could not fail to be one. You have to **exhibit a particular object** and check that it fits. So a proof of `∃` is a pair: a witness, and a proof about that witness.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="exists-intro" title="A witness and a check" />
+
+The brackets are the ones you used for conjunction, because the structure is the same. The tactic does the same thing:
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="exists-tactic" title="The exists tactic" />
+
+Using an existence statement is the harder direction. When you are handed "there is an $n$ such that…", you do not have the number — you have a promise that one is there. All you can do is give it a name.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="exists-elim" title="Getting hold of the witness" />
+
+<Concept type="idea" title="The same asymmetry as the connectives">
+  `∀` behaves like "and": expensive to prove (every case has to be closed at once), cheap to use (take whichever instance you need). `∃` behaves like "or": cheap to prove (one example is enough), expensive to use (you do not know which object you were handed). Connectives and quantifiers run on a single scheme — the quantifiers just run it over infinitely many alternatives.
+</Concept>
+
+Existence comes free from a universal statement: any value at all will serve as the witness.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="quantifier-symmetry" title="For every implies there exists" />
+
+## Counterexamples
+
+Here Lean agrees with a habit you brought from school. To **refute** a "for every" statement you need not prove anything in general — one number where it breaks is enough.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="counterexample" title="Not every number is even" />
+
+Line by line. `intro h` supposes the statement holds. Then `h 3` gives "3 leaves remainder 0 on division by 2". The `decide` tactic settles a concrete numerical claim by computing it, and finds this one false. `absurd` puts the claim and its refutation together, and the goal closes.
+
+<Concept type="mistake" title="Proving and refuting are not symmetric">
+  To **prove** a "for every" you need an argument covering all the cases at once: going through them one at a time never terminates. To **refute** one, a single example is enough. Hence a working rule — when a statement will not yield, spend a couple of minutes hunting for a counterexample before you push the proof any further.
+</Concept>
+
+One direction of the link between the quantifiers is proved directly: if some object refutes $P$, then "for every $n$, $P(n)$" is false.
+
+<LeanSnippet file="DiveLean/Ch03/Quantifiers.lean" region="exists-not-to-not-forall" title="A refuting object means not for every" />
+
+The converse — "if not for every, then a refuting object exists" — is a harder business and needs the law of excluded middle. That is the same boundary you met with de Morgan's law.
+
+<QuickCheck
+  client:visible
+  id="lean-exists-witness"
+  question="You are given h : ∃ n : Nat, P n. Can you find out what that n is?"
+  correctIndex={1}
+  options={[
+    { label: 'Yes, through h.1 — the first half of the pair', explanation: 'It looks like a pair, but you cannot pull the value out and carry on with it as a number: a proof of existence does not hand the witness to the outside world.' },
+    { label: 'No: you can only give it a name with cases and reason about it as an unknown', explanation: 'Correct: existence promises that the object is there, not which one it is. Everything after that has to work for any object that fits.' },
+    { label: 'Yes, if P is decidable — then Lean finds n by searching', explanation: 'Decidability lets you check a particular value, but that is not how a witness is extracted from a proof of existence.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `theorem all_add_zero : ∀ n : Nat, n + 0 = n`.
+2. Prove `theorem exists_big : ∃ n : Nat, n > 100`.
+3. Prove `theorem from_all (P : Nat → Prop) (h : ∀ n, P n) : P 0 ∧ P 1`.
+4. Prove `theorem swap_foralls (P : Nat → Nat → Prop) (h : ∀ a b, P a b) : ∀ b a, P a b`.
+5. Refute it: `theorem not_all_positive : ¬(∀ n : Nat, n > 0)`.
+6. Prove `theorem exists_of_exists (P Q : Nat → Prop) (h : ∃ n, P n) (himp : ∀ n, P n → Q n) : ∃ n, Q n`.
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `by intro n; rfl` — or straight away `fun n => Nat.add_zero n`.
+  2. `⟨101, by decide⟩` — any witness that fits will do, and `decide` does the checking.
+  3. `⟨h 0, h 1⟩` — the universal statement is applied twice.
+  4. `by intro b a; exact h a b` — the order of the `intro`s fixes the order of the quantifiers in the goal. This one is in the chapter file as `swap_foralls`.
+  5. `by intro h; exact absurd (h 0) (by decide)` — the counterexample here is zero.
+  6. `by cases h with | intro n hn => exact ⟨n, himp n hn⟩` — the same witness, only the property changes.
+
+</details>
+
+## Summary
+
+- `∀ n, P n` is a function from a value to a proof: proved with `intro`, used by applying it.
+- `∃ n, P n` is a pair of witness and proof: proved by exhibiting one, used through `cases`.
+- You cannot look at the witness — existence gives you nothing but a name for an unknown object.
+- One counterexample refutes a universal statement. That is cheap, so try it before you set about building a proof.
+
+Next come equalities: rewriting one expression as another, and watching Lean expand the brackets for us.
+
+<LessonComplete client:visible lessonId="lean-quantifiers" />

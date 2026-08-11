@@ -1,0 +1,50 @@
+---
+title: Lean, step by step
+description: A Lean 4 course for people who can do the math but have never proved anything to a machine.
+---
+
+import Concept from '../../components/Concept.astro';
+
+There is a difference between "I computed it and it worked" and "I proved it cannot be otherwise". School spends eleven years on the first and barely touches the second — even though the second is what mathematics actually is.
+
+**Lean** is a language where a proof is written like a program and checked by the compiler in full: no "obviously", no "similarly", no "the reader will easily verify". A wrong proof simply does not build.
+
+<Concept type="idea" title="Why bother">
+  Not to replace paper. To see what a proof is made of. When you write in words it is easy to skip a step that is not actually there; the machine will not let you, and it points at the exact place where the argument rests on nothing.
+</Concept>
+
+## Who this is for
+
+You need school-level mathematics and a tolerance for a few hours of everything feeling foreign. Programming experience is optional and helps less than you would expect: Lean resembles the languages you know far less than it resembles mathematics.
+
+The mathematics here is **familiar ground, not the subject**. Every statement is chosen so that you already believe it — which frees all your attention for the real question: how do I explain this to Lean?
+
+## How the course works
+
+The order comes from the language, not from mathematics. Each chapter introduces one technique and drills it on statements that technique can reach.
+
+Every snippet on these pages is a fragment of a real file from [the repository](https://github.com/artem-x-meta/lean-learning), compiled together with the site. An example that does not build cannot appear here — the build fails first.
+
+<Concept type="remember" title="Reading is not enough">
+  Under each snippet there is an **Open in playground** link. It opens [live.lean-lang.org](https://live.lean-lang.org/), a full Lean editor in the browser with nothing to install. Put the cursor between the tactics and watch the goal change. Skip that and the course turns into reading someone else's code.
+</Concept>
+
+## The ladder
+
+| Chapter | Technique | Familiar ground |
+|---|---|---|
+| [1.1](/proof-as-object/) | propositions as types, `intro`, `exact` | arithmetic, implication |
+| [1.2](/connectives/) | `∧`, `∨`, `¬`, case analysis | propositional logic |
+| [1.3](/quantifiers/) | `∀`, `∃`, counterexamples | parity |
+| [1.4](/rewriting/) | `rw`, `calc`, `ring` | algebraic identities |
+| [1.5](/numbers/) | `decide`, `norm_num`, `omega` | divisibility, remainders |
+| [1.6](/induction/) | recursion and `induction` | sums of series |
+| [1.7](/inequalities/) | `linarith`, `nlinarith` | AM–QM inequality |
+| [1.8](/iff-vs-implies/) | `↔` versus `→` | extraneous roots |
+| [1.9](/sqrt-two/) | proof by contradiction | irrationality of √2 |
+
+The first three chapters need only core Lean. From chapter 1.4 on, **Mathlib** joins in — the standard mathematical library, already available in the playground.
+
+The last two chapters are the point of the whole thing. One shows that the rule "check your answer after squaring" is not a rule to memorise but a visible difference between two types. The other formalises the oldest surprising proof in mathematics.
+
+Start with [1.1 A proof is an object](/proof-as-object/).

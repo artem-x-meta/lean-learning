@@ -1,0 +1,124 @@
+---
+title: '1.4 Rewriting equalities'
+description: The rw tactic, calc chains, ring for identities, and the line between an identity and an equation.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="quantifiers, intro and exact, reading the goal in the playground" />
+
+Equality is the most-used thing in mathematics, and so far we have barely touched it. Time to fix that: substituting one thing for another, writing a derivation as a chain, and handing the routine over to the machine.
+
+This is the first chapter that needs **Mathlib** — the standard mathematical library for Lean. The playground already has it; locally `lake` fetches it for you.
+
+<LearningGoals items={[
+  'substitute an equality into the goal with rw, in both directions',
+  'write a derivation as a calc chain with every step justified',
+  'prove identities in a single word with ring',
+  'tell an identity from an equation, and see why ring does not solve equations',
+]} />
+
+## rw: substitute and move on
+
+The `rw` tactic takes an equality and replaces every occurrence of its left-hand side in the goal with the right-hand side.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="rw-basic" title="One substitution and the goal is gone" />
+
+Look at what happened after the substitution: the goal became `b + 1 = b + 1`, and `rw` closed it on its own. That happens a lot — `rw` tries `rfl` after every rewrite.
+
+You can hand it several equalities at once; they are applied in order.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="rw-closes" title="A chain of substitutions" />
+
+Sometimes you want the opposite — replace the right-hand side by the left. That is what the left arrow is for.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="rw-direction" title="Rewriting backwards" />
+
+<Concept type="mistake" title="rw changes the goal, not a hypothesis">
+  By default `rw [h]` acts on the goal. To rewrite inside a hypothesis you have to say so: `rw [h] at hyp`. The standard beginner's mistake is to stare at an unchanged hypothesis and wonder why nothing happened.
+</Concept>
+
+## calc: a derivation as you would write it on paper
+
+A long chain of `rw` reads badly: you can see what was done, but not what things looked like along the way. That is what `calc` is for — it lays the derivation out exactly as you would write it by hand, and demands a justification for every step.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="calc-chain" title="A chain of equalities" />
+
+The underscore means "whatever came out of the previous line". Read it top to bottom like any derivation on paper, while Lean checks that each step really does follow from what is written after `:=`.
+
+## ring: routine work to the machine
+
+Expanding brackets and collecting like terms can be done by hand, but it is precisely the work a human has no business doing. The `ring` tactic proves any identity that holds in every commutative ring — and that covers all of school algebra with $+$, $-$, $\cdot$ and natural-number powers.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="ring-square" title="Square of a sum" />
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="ring-difference" title="Difference of squares" />
+
+To see that `ring` is not magic, here is the same square of a sum broken into steps:
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="calc-by-hand" title="The same thing step by step" />
+
+## Where the line runs
+
+Here is the distinction worth nailing down straight away.
+
+An **identity** holds for all values of the variables: $(a+b)^2 = a^2 + 2ab + b^2$. There is nothing to check and nothing to solve — `ring` handles it.
+
+An **equation** is a condition on an unknown: $x + 3 = 10$. It does not hold always, only for one particular $x$. Here `ring` is useless: it cannot use hypotheses at all, it only reduces both sides of the goal to a common form.
+
+<LeanSnippet file="DiveLean/Ch04/Rewriting.lean" region="ring-limits" title="This one needs linarith, not ring" />
+
+`linarith` is a solver for linear problems: it looks at the hypotheses in the context and derives the goal from them. There is more about it in the chapter on inequalities.
+
+<Concept type="idea" title="Why the distinction matters">
+  School writes both with the same equals sign and tells them apart by context: "simplify" versus "solve". Lean makes you name the difference out loud. An identity is a statement with a "for all" in front of it; an equation is a statement about one particular unknown, under given hypotheses. Different statements, so different tactics.
+</Concept>
+
+<QuickCheck
+  client:visible
+  id="lean-ring-vs-linarith"
+  question="Why will ring not prove x = 7 from the hypothesis x + 3 = 10?"
+  correctIndex={0}
+  options={[
+    { label: 'ring does not look at hypotheses — it only reduces both sides of the goal to a common form', explanation: 'Correct: to ring the goal x = 7 is a claim about an arbitrary x, and that claim is false. The hypothesis has to be used explicitly, for instance by linarith.' },
+    { label: 'ring works only with integers, and x could be anything', explanation: 'No: ring works in any commutative ring. The type is not the problem — the problem is that hypotheses play no part in what ring does.' },
+    { label: 'Because subtraction on the natural numbers behaves differently', explanation: 'We are in ℤ here, and subtraction is beside the point: the same problem would remain in any type.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `theorem sub_self_eq (a : ℤ) : a - a = 0`.
+2. Prove `theorem expand_prod (a b : ℤ) : (a + 1) * (b + 1) = a * b + a + b + 1`.
+3. Prove `theorem cube_of_sum (a b : ℤ) : (a + b) ^ 3 = a ^ 3 + 3 * a ^ 2 * b + 3 * a * b ^ 2 + b ^ 3`.
+4. Prove `theorem use_hyp (x y : ℤ) (h : x = y + 2) : x - y = 2`.
+5. Write a `calc` chain proving `(a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2`, in at least three steps.
+6. Try to prove `theorem not_identity (a b : ℤ) : (a + b) ^ 2 = a ^ 2 + b ^ 2` with `ring`. What does it say, and why is that the right answer?
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `by ring`.
+  2. `by ring`.
+  3. `by ring` — this one is in the chapter file as `cube_of_sum`.
+  4. `by rw [h]; ring`, or simply `by linarith` — either way the hypothesis has to be put to work.
+  5. For instance: `calc (a - b) ^ 2 = (a - b) * (a - b) := by ring`, then `_ = a * a - a * b - b * a + b * b := by ring`, then `_ = a ^ 2 - 2 * a * b + b ^ 2 := by ring`.
+  6. `ring` will not prove it, and rightly so: the statement is false. The two sides differ by $2ab$, which vanishes only when $a = 0$ or $b = 0$ — so this is no identity. The tactic reports that it reduced both sides to normal form and the two forms did not match.
+
+</details>
+
+## Summary
+
+- `rw [h]` substitutes an equality into the goal, `rw [← h]` substitutes the other way round, `rw [h] at hyp` works inside a hypothesis.
+- `calc` lays a derivation out as a chain and demands a justification for every step; it reads like handwriting.
+- `ring` proves identities built from $+$, $-$, $\cdot$ and powers — the whole of school bracket-expanding.
+- An identity and an equation are different animals: `ring` ignores hypotheses, so equations need other tactics.
+
+Next come the numbers: solvers that settle concrete statements by computation, and the way Lean handles divisibility.
+
+<LessonComplete client:visible lessonId="lean-rewriting" />

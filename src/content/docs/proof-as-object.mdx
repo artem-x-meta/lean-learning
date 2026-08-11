@@ -1,0 +1,142 @@
+---
+title: '1.1 A proof is an object'
+description: Propositions as types, proofs as values of those types, implication as a function, and the first two tactics.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="nothing but a willingness to read unfamiliar syntax" />
+
+In ordinary mathematics a proof is a text. A human reads it and decides whether it convinces. In Lean a proof is an **object** with a type, and the reader is the compiler.
+
+That sounds strange until you see it, so let us start with the smallest example there is.
+
+<LearningGoals items={[
+  'tell a statement apart from a proof of it',
+  'read the notation `name : type` and know what it means for proofs',
+  'prove simple equalities with rfl',
+  'write an implication and prove it with intro and exact',
+]} />
+
+## A statement is a type
+
+In Lean everything has a type. The number `2` has type `Nat`, a string has type `String`. **Statements** have a type too, and it is called `Prop`.
+
+The `#check` command shows the type of an expression. Notice that a false statement is just as much a citizen of `Prop` as a true one. Being a statement and being true are different things.
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="check-prop" title="Both statements have type Prop" />
+
+## A proof is a value
+
+Here is the central idea of the whole course. If `2 + 2 = 4` is a type, then **a proof of it is a value of that type** — exactly as `2` is a value of type `Nat`.
+
+It is written like any other definition: a name and a type on the left, a value on the right.
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="first-proof" title="The first proof" />
+
+Read it as: "`two_plus_two` is a proof of the statement `2 + 2 = 4`, and here it is: `rfl`."
+
+`rfl` is short for *reflexivity*: everything equals itself. Lean evaluates both sides, sees `4` and `4`, and that settles it.
+
+Let us confirm what we built:
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="check-proof" title="The proof has the type we promised" />
+
+<Concept type="idea" title="Why this pays off">
+  Since a proof is an ordinary value, you can do anything with it that you do with values: name it, pass it to a function, return it from one. That is where the power comes from — proofs are **built out of proofs** the way programs are built out of functions. No separate machinery is needed.
+</Concept>
+
+## You cannot prove what is false
+
+The obvious question: what stops us writing the same thing for `2 + 2 = 5`?
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="rfl-fails" title="This will not work" />
+
+`rfl` demands that both sides evaluate to the same thing. Four on the left, five on the right — Lean refuses. Uncomment the line in the playground and read the error; that is more useful than reading about it.
+
+<Concept type="mistake" title="Failing to prove is not the same as being false">
+  When a proof does not go through, it means exactly one thing: **this attempt did not work**. Sometimes the statement really is false; sometimes you just need a different technique. A Lean error is a message about your proof, not a verdict on the statement.
+</Concept>
+
+## Implication is a function
+
+Now the part everything was leading to. How do you write “$A$ implies $B$”?
+
+Think about what proving it means. It means: hand me a proof of $A$ and I will hand you back a proof of $B$. But "give me one thing, get another" is a **function**.
+
+And so it is: in Lean the implication `A → B` is the type of functions from proofs of `A` to proofs of `B`. It is the same arrow as in ordinary function types, and that is not a coincidence.
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="implication" title="A implies A" />
+
+`fun hA => hA` is the function that returns its argument. That is: "you gave me a proof of `A`, here it is back." Nothing more is required.
+
+## The same proofs, written with tactics
+
+Writing proofs as finished values is fine while they stay short. It stops being fine quickly, so there is a second way — **tactic mode**, entered with the keyword `by`.
+
+A tactic does not build the value directly. It changes the state: what is given and what remains to prove.
+
+- `intro hA` — "suppose we are given a proof of `A`; call it `hA`." The hypothesis moves from the goal into the context.
+- `exact hA` — "here is the required proof: `hA`." The goal closes.
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="implication-tactic" title="The same thing with tactics" />
+
+Open this in the playground and put the cursor between the lines. On the right you will see the goal: before `intro` it reads `⊢ A → A`, after it reads `A : Prop, hA : A ⊢ A`. Watching that transformation is the main activity in Lean.
+
+## Building from parts
+
+If implication is a function, then using one means applying it. Let us prove transitivity: if $A$ implies $B$ and $B$ implies $C$, then $A$ implies $C$.
+
+<LeanSnippet file="DiveLean/Ch01/Basics.lean" region="transitivity" title="Transitivity of implication" />
+
+Read `hBC (hAB hA)` from the inside out. We hold `hA : A`. Apply `hAB : A → B` to it and get a proof of `B`. Apply `hBC : B → C` to that and get `C` — precisely what was wanted.
+
+<QuickCheck
+  client:visible
+  id="lean-implication-is-function"
+  question="What does h : A → B mean in Lean?"
+  correctIndex={1}
+  options={[
+    { label: 'The statement "A implies B", still to be proved', explanation: 'The statement itself is the type A → B. Writing h : A → B says a proof already exists and is called h.' },
+    { label: 'h is a function turning a proof of A into a proof of B', explanation: 'Correct: implication is the function type, and h is a particular function of that type — that is, a finished proof of the implication.' },
+    { label: 'h is a value of type B obtained from A', explanation: 'No: to get a value of type B you still have to apply h to some proof of A.' },
+  ]}
+/>
+
+## Practice
+
+Work in the playground: open any snippet above, clear it and write your own.
+
+1. Prove `theorem my_id (A : Prop) : A → A` — first as a function, then with tactics.
+2. Prove `theorem const (A B : Prop) : A → B → A`. Hint: two hypotheses means two `intro`s.
+3. Prove `theorem apply_it (A B : Prop) : A → (A → B) → B`.
+4. Prove `theorem swap_args (A B C : Prop) (h : A → B → C) : B → A → C`.
+5. Try to prove `theorem impossible (A B : Prop) : A → B`. What goes wrong, and why is that right?
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `fun hA => hA`, or `by intro hA; exact hA`.
+  2. `by intro hA hB; exact hA` — the second proof simply was not needed, and that is fine.
+  3. `by intro hA hAB; exact hAB hA` — first obtain the function, then apply it to `hA`.
+  4. `by intro hB hA; exact h hA hB` — this one is in the chapter file as `swap_args`.
+  5. It cannot be proved, and it should not be: `A` and `B` are arbitrary statements, and the truth of one says nothing about the other. Take `A` true and `B` false and the claim fails. `intro hA` will work, but then the context holds nothing you could turn into `B`. That is what hitting a wall feels like — in Lean it happens earlier and more honestly than on paper.
+
+</details>
+
+## Summary
+
+- A statement is a type living in `Prop`; false statements are types too.
+- A proof is a value of the corresponding type — an ordinary value, with no magic attached.
+- `rfl` proves equalities whose two sides evaluate to the same thing.
+- `A → B` is the type of functions from proofs of `A` to proofs of `B`, so proofs compose by application.
+- `by` enters tactic mode: `intro` moves a hypothesis into the context, `exact` closes the goal with a finished proof.
+
+Next we add the remaining connectives — "and", "or", "not" — and learn to argue by cases.
+
+<LessonComplete client:visible lessonId="lean-proof-as-object" />

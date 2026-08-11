@@ -1,0 +1,22 @@
+---
+import { langFromPath, t } from '../lib/i18n';
+
+interface Props {
+  grade: string;
+  time: string;
+  /** Free text: the two locales word it differently. */
+  level?: string;
+  prerequisites?: string;
+}
+
+const { grade, time, level, prerequisites } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const levelLabel = level ?? (lang === 'ru' ? 'База' : 'Base');
+---
+
+<div class="dm-lesson-meta" aria-label={t(lang, 'lessonMeta')}>
+  <span class="dm-chip dm-chip--accent">{grade}</span>
+  <span class="dm-chip">◷ {time}</span>
+  <span class="dm-chip">◇ {levelLabel}</span>
+  {prerequisites && <span class="dm-chip">{t(lang, 'prerequisites')}: {prerequisites}</span>}
+</div>

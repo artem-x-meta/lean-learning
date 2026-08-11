@@ -1,0 +1,120 @@
+---
+title: '1.6 Induction'
+description: Recursive definitions and induction as two sides of one construction — base, step and the induction hypothesis in Lean.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="50–60 min" level="Base" prerequisites="calc and ring, the decide and omega solvers, quantifiers" />
+
+There are infinitely many natural numbers, so a claim about "every $n$" can never be settled by checking cases. The only way through is **induction**: prove the claim for zero, then show it survives the move to the next number.
+
+In Lean this technique has a pleasant feature. It looks exactly like defining a function — and that is not an analogy, it is the same construction.
+
+<LearningGoals items={[
+  'define functions recursively, by a base and a step',
+  'prove statements by induction and read the two goals it produces',
+  'use the induction hypothesis at the right point of a calculation',
+  'see recursion and induction as one thing looked at from two sides',
+]} />
+
+## A recursive definition
+
+The sum of the numbers from 1 to $n$ cannot be written as a closed formula until that formula has been proved. It can be *defined* recursively, though: the sum up to zero is zero, and the sum up to $n+1$ is $(n+1)$ plus the sum up to $n$.
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="recursive-def" title="A definition by base and step" />
+
+Such a definition is computable straight away. Values come out by substitution, with nothing left to prove:
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="compute-sum" title="The values compute themselves" />
+
+## Induction: the same base and step
+
+Now the formula. The `induction` tactic splits the goal in two — into precisely the two cases the definition had.
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="induction-shape" title="The formula for the sum" />
+
+Take it apart.
+
+- `| zero => rfl` — the base. At $n = 0$ both sides evaluate to zero, and computation settles it.
+- `| succ k ih =>` — the step. Here `k` is the previous number, and **`ih` is the induction hypothesis**: the statement, already proved, for `k`.
+- `change` restates the goal in unfolded form: by definition `sumTo (k+1)` *is* `(k+1) + sumTo k`.
+- After that it is an ordinary `calc`, and `ih` goes to work in the middle step.
+
+<Concept type="idea" title="Why the induction hypothesis is not cheating">
+  At first glance it looks like a swindle: we prove a statement by helping ourselves to that same statement. But we use it **for a smaller number**, and by then the smaller case is already settled — by the base, or by the step before. A recursive function lives on the same fact: it calls itself, but on a smaller argument, which is why the computation ends. Induction and recursion are one construction written down from two sides.
+</Concept>
+
+Here is the same formula stated differently. The shape of the proof does not depend on how the claim is phrased:
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="induction-simple" title="The same sum, stated differently" />
+
+## One more recursion
+
+Define doubling $n$ times — that is $2^n$, but written as a recursion:
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="power-def" title="Doubling n times" />
+
+And prove that this outgrows plain counting. Notice that the step closes with `omega`: once the definition is unfolded the problem is linear, and the induction hypothesis simply sits in the context as one more inequality.
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="power-grows" title="Doubling outruns counting" />
+
+<Concept type="mistake" title="Where people get stuck">
+  Two usual troubles. **First:** forgetting to unfold the definition, then being surprised that `ring` sees no connection between `sumTo (k+1)` and `sumTo k` — that connection has to be produced, with `change` or `simp`. **Second:** finishing the step without ever touching `ih`. If the induction hypothesis was not needed, then most likely induction was not needed either — or what you proved is not what was asked.
+</Concept>
+
+## The classic example
+
+The sum of the first $n$ odd numbers is $n^2$. A pretty fact, shown at school with a picture of a square; here it takes four lines.
+
+<LeanSnippet file="DiveLean/Ch06/Induction.lean" region="exercise-odd-sum" title="A sum of odd numbers is a square" />
+
+<QuickCheck
+  client:visible
+  id="lean-induction-hypothesis"
+  question="What is ih in the branch | succ k ih =>?"
+  correctIndex={1}
+  options={[
+    { label: 'The statement for k + 1 — the thing that still has to be reached', explanation: 'No, that is the goal. ih is the opposite: something handed to you.' },
+    { label: 'The statement for k, already proved at the previous step', explanation: 'Correct: the induction hypothesis comes free, because for the smaller number the result is settled already.' },
+    { label: 'The statement for zero, obtained in the base case', explanation: 'The base closes the zero case only. Inside the step what you hold is the statement for the immediately preceding k.' },
+  ]}
+/>
+
+## Practice
+
+1. Define `double : Nat → Nat` recursively and prove `double n = 2 * n`.
+2. Prove `theorem sum_odd_is_square (n : Nat) : sumOdd n = n * n` on your own, without looking above.
+3. Prove `theorem add_zero_right (n : Nat) : n + 0 = n` by induction. Why might induction be unnecessary here?
+4. Prove `theorem doubled_pos (n : Nat) : 0 < doubled n`.
+5. Define the factorial recursively and prove it is always positive.
+6. Try to prove `∀ n : Nat, n < 100` by induction. Where do you get stuck, and why is that the right outcome?
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `def double : Nat → Nat | 0 => 0 | n + 1 => 2 + double n`, then induction: base `rfl`, step `by change 2 + double k = 2 * (k + 1); rw [ih]; ring`.
+  2. See the code above — base `rfl`, step by `rw [ih]` and `ring`.
+  3. Induction works, but is not needed: in Lean `n + 0` reduces to `n` by computation, so `rfl` suffices. It is `0 + n = n` that does need induction — addition is defined by recursion on the second argument.
+  4. `by induction n with | zero => decide | succ k ih => change 0 < 2 * doubled k; omega`.
+  5. `def fact : Nat → Nat | 0 => 1 | n + 1 => (n + 1) * fact n`, then induction with `omega` or `Nat.mul_pos` in the step.
+  6. The base goes through: $0 < 100$. The step does not. From $k < 100$ nothing follows about $k + 1 < 100$, and at $k = 99$ it is flatly false. As it should be — the statement is false. The lesson is worth keeping: **an induction step has to work for every $k$**, not only for the small ones.
+
+</details>
+
+## Summary
+
+- A recursive definition is given by a base and a step; after that the values compute themselves.
+- `induction n with | zero => ... | succ k ih => ...` produces exactly two goals, of exactly those two shapes.
+- `ih` is the statement already proved for the previous number; if it never came in useful, the induction was probably surplus.
+- A definition sitting under a recursion has to be unfolded explicitly, or the tactics will not see how neighbouring values are related.
+- Recursion and induction are one construction: both work because the argument gets smaller.
+
+Next come inequalities: solvers that reach where `omega` cannot, squares included.
+
+<LessonComplete client:visible lessonId="lean-induction" />

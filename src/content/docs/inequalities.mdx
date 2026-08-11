@@ -1,0 +1,119 @@
+---
+title: '1.7 Inequalities'
+description: The linarith and nlinarith tactics, the role of the hint in square brackets, and the border between linear and non-linear.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="the omega and norm_num solvers, ring, calc" />
+
+Equalities are settled, and so are numbers. What is left is the inequality — the thing a human proves noticeably worse than a machine does, because a case is so easy to drop.
+
+The idea of this chapter: **a solver can be told things, and should be**. It is not all-powerful. But hand it one right fact and it finishes the job alone.
+
+<LearningGoals items={[
+  'prove linear inequalities with linarith',
+  'see that linarith is adding hypotheses up with coefficients',
+  'use nlinarith and pass it a hint in square brackets',
+  'reach for positivity when non-negativity is all you need',
+]} />
+
+## linarith: adding hypotheses up
+
+`linarith` looks for a linear combination of the hypotheses that gives the goal. That sounds abstract, but in practice it is exactly what you do by hand: add inequalities together and multiply them by positive numbers.
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="linarith-basic" title="From hypotheses to the goal" />
+
+Systems work too. Here the tactic worked out the coefficients on its own:
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="linarith-combination" title="A system of linear equations" />
+
+Add the two equations and you get $3x = 9$. That is the combination `linarith` found — you never had to say which multiples to take, only that the answer follows.
+
+## Where linearity ends
+
+As soon as a variable is squared, `linarith` is helpless: it cannot multiply unknowns by each other. It sees `x ^ 2` as an atom, an opaque thing it knows nothing about. That the atom happens to be a square, and therefore never negative, is invisible to it.
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="linarith-fails" title="A square is not linear any more" />
+
+`positivity` is the narrow specialist for this: it proves an expression positive or non-negative by taking its structure apart. Squares, sums of squares, absolute values — its territory. It never looks at the hypotheses at all, so either the shape of the expression settles the matter or the tactic gives up.
+
+## nlinarith and the power of a hint
+
+`nlinarith` is `linarith` that first throws in a few products and squares of its own. Sometimes that is enough. More often you have to **name the key fact**, and that is what the square brackets are for.
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="nlinarith" title="Two squares against twice the product" />
+
+Take apart what happened. We handed the tactic one fact, `sq_nonneg (a - b)` — that is, $(a-b)^2 \ge 0$. Expand the bracket and it reads $a^2 - 2ab + b^2 \ge 0$; the goal is that with one term moved across. All the content sits in the choice of hint; the rest is mechanics.
+
+<Concept type="idea" title="The hint is the mathematics">
+  Notice what we actually did. We did not prove the inequality, and we did not hand the whole thing to the machine either — we **named the idea of the proof** in one line. "Consider the square of the difference" is exactly what a person says at the blackboard. What follows is manipulation, and manipulation is worth delegating.
+</Concept>
+
+The same trick on a different inequality, and the hint does not change:
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="nlinarith-hint" title="The same hint, a different goal" />
+
+This is the mean inequality in one of its shapes: a product never beats the average of the two squares. Different statement, same one-line idea.
+
+And completing the square, familiar from school:
+
+<LeanSnippet file="DiveLean/Ch07/Inequalities.lean" region="transitivity-chain" title="x² − 4x + 5 ≥ 1" />
+
+Here $x^2 - 4x + 5 = (x-2)^2 + 1$, so the hint is the square of $x - 2$ — of the expression that drives the trinomial to its minimum. The hint always has that same shape; only what goes inside the bracket changes.
+
+<Concept type="mistake" title="A hypothesis you never used">
+  When writing down the conditions of a problem it is easy to add too much: "let $a \ge 0$ and $b \ge 0$". Lean's linter will point it out — it notices unused hypotheses. Listen to it: often it means the statement holds more generally than you assumed. $ab \le \frac{a^2+b^2}{2}$ is exactly such a case — it holds for all real numbers, not only the non-negative ones.
+</Concept>
+
+<QuickCheck
+  client:visible
+  id="lean-nlinarith-hint"
+  question="Why is sq_nonneg (a - b) passed to nlinarith in square brackets?"
+  correctIndex={0}
+  options={[
+    { label: 'It is a hint: the fact (a−b)² ≥ 0, from which the goal follows linearly', explanation: 'Correct: the step with content in it is choosing the right square; after that the tactic copes mechanically.' },
+    { label: 'To restrict the range of values a and b may take', explanation: 'No, it restricts nothing: a square is non-negative always, for every a and b.' },
+    { label: 'To make the tactic faster, though it would manage without it', explanation: 'Usually it is precisely without the hint that it fails: trying every possible product is far too expensive.' },
+  ]}
+/>
+
+## Practice
+
+Work in the playground: open any snippet above, clear it and write your own.
+
+1. Prove `example (x : ℝ) (h : x ≥ 5) : 2 * x ≥ 10`.
+2. Prove `example (a b : ℝ) (h1 : a + b = 10) (h2 : a - b = 4) : a = 7`.
+3. Prove `theorem sum_of_squares_nonneg (a b : ℝ) : a ^ 2 + b ^ 2 ≥ 0`.
+4. Prove `example (x : ℝ) : x ^ 2 + 1 > 0`.
+5. Prove `example (a b : ℝ) : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2)` — the hint is the one from the chapter.
+6. Prove `example (x : ℝ) : x ^ 2 - 6 * x + 10 > 0`. Which square do you hint?
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `by linarith`.
+  2. `by linarith` — the tactic adds the two equations up itself.
+  3. `by positivity`.
+  4. `by positivity` — a square plus a positive number.
+  5. `by nlinarith [sq_nonneg (a - b)]`. The difference between the two sides is exactly $(a-b)^2$. Once the square has been named nothing non-linear is left to do, and plain `linarith [sq_nonneg (a - b)]` closes it as well — worth trying, because it shows how little the solver had to do after the hint.
+  6. `by nlinarith [sq_nonneg (x - 3)]` — complete the square: $x^2 - 6x + 10 = (x-3)^2 + 1$. The hint keeps its shape: the square of whatever expression sends the trinomial to its minimum.
+
+</details>
+
+## Summary
+
+- `linarith` finds a linear combination of the hypotheses that gives the goal — the machine version of "add the inequalities up".
+- Multiplying two variables takes the problem across the border of linearity.
+- `nlinarith [hint]` reaches the non-linear cases once you supply the key fact; choosing that fact is the part that is actually mathematics.
+- `positivity` proves non-negativity from the structure of the expression, and ignores hypotheses entirely.
+- An unused hypothesis is a signal: the statement probably holds more generally than you stated it.
+
+Next comes the chapter all of this was worth learning for: the difference between equivalence and consequence.
+
+<LessonComplete client:visible lessonId="lean-inequalities" />

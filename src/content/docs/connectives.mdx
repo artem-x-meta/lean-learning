@@ -1,0 +1,139 @@
+---
+title: '1.2 Connectives and case analysis'
+description: Conjunction, disjunction and negation as types rather than symbols, and why a disjunction is harder to use than to prove.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="statements as types, proofs as values, intro and exact" />
+
+Last time there was a single connective. Implication turned out to be a function, and everything else followed from that. Now we add "and", "or" and "not".
+
+Each of them will also turn out to be something familiar. And an asymmetry falls out along the way that is worth carrying with you: **a disjunction is cheap to prove and expensive to use, and a conjunction is exactly the other way round.**
+
+<LearningGoals items={[
+  'build a conjunction with angle brackets and take it apart with .1 and .2',
+  'prove a disjunction by picking a side, and use one by case analysis',
+  'read ¬A as shorthand for A → False',
+  'derive anything from a contradiction, and see why that is not absurd',
+]} />
+
+## "And" is a pair
+
+What does it take to prove “$A$ and $B$”? Obviously both proofs at once. So a proof of a conjunction is a **pair**, and you assemble it with angle brackets.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="and-intro" title="Assembling a conjunction" />
+
+The same thing with tactics. `constructor` says: "the goal is composite, break it into parts" — and one goal becomes two.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="and-tactic" title="The same, with constructor" />
+
+The dots before `exact` focus on one subgoal at a time. They are optional, but without them it is easy to lose track of which goal you are closing.
+
+The other direction is easier still: from a pair you take either half.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="and-elim" title="Taking one half" />
+
+Put the two directions together and you get commutativity — the whole proof fits on one line.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="and-comm" title="Order does not matter in a conjunction" />
+
+## "Or" is a choice
+
+Here it gets interesting. To prove “$A$ or $B$” one side is enough — but you have to **say which one**. Knowing that one of them holds is not enough; Lean wants it produced.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="or-intro" title="Pick a side" />
+
+`Or.inl` and `Or.inr` are named after *left* and *right*. The tactics do the same job:
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="or-tactic" title="The left tactic" />
+
+**Using** a disjunction is the hard direction. If you are handed “$A$ or $B$”, you do not know which half is true. So the proof has to go through in both cases — otherwise it is not a proof.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="or-elim" title="Case analysis" />
+
+Read `cases h with | inl hA => ... | inr hB => ...` as: "if `h` came from the left, call it `hA` and prove the goal; if it came from the right, call it `hB` and prove the goal again."
+
+<Concept type="idea" title="The symmetry worth noticing">
+  "And" is expensive to prove and cheap to use: building the pair takes both halves, but pulling one out is a single move. "Or" mirrors it exactly: building is cheap, since one side is enough, and using is expensive, since you pay for both branches. This is not a quirk of Lean. It is an exact reflection of how the two connectives are built in ordinary mathematics.
+</Concept>
+
+## "Not" is not a connective at all
+
+Negation in Lean is not a construction of its own. `¬A` is **shorthand** for `A → False`, that is, “$A$ implies a falsehood”.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="not-def" title="A definition, not a theorem" />
+
+`Iff.rfl` works because there is nothing here to prove: both sides are the same expression, written two ways.
+
+That tells you at once how to prove a negation. It is a function, so start with `intro`. You get a proof of $A$ and have to derive a contradiction from it.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="not-use" title="Nothing contradicts itself" />
+
+Step through it. From `h : A ∧ ¬A` we get `h.1 : A` and `h.2 : ¬A`. But `h.2` is a function from `A` to `False`. Apply it to `h.1` and out comes `False` — exactly what was required.
+
+## Anything follows from a falsehood
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="contradiction" title="False.elim closes any goal" />
+
+It looks like cheating, but it is an honest rule: **if the assumptions contradict each other, there is nothing left to prove**. The statement “if $A$ and not $A$, then $B$” is true simply because its hypothesis can never be met.
+
+<Concept type="mistake" title="This does not mean you can prove anything">
+  Everything follows from `False` — but `False` itself cannot be proved. The rule only fires when a contradiction is already sitting in the context, that is, when someone has handed you mutually exclusive assumptions. In a consistent system you never get as far as `False.elim`.
+</Concept>
+
+## Putting it together
+
+De Morgan's law: if “$A$ or $B$” is false, then both are false. All three techniques show up at once — `constructor` for the conjunction in the goal, `intro` for each negation, a choice of side to build the contradiction.
+
+<LeanSnippet file="DiveLean/Ch02/Connectives.lean" region="de-morgan" title="De Morgan's law" />
+
+<QuickCheck
+  client:visible
+  id="lean-or-is-harder-to-use"
+  question="You are given h : A ∨ B. Why can you not simply write exact h.1, the way you would for a conjunction?"
+  correctIndex={2}
+  options={[
+    { label: 'You can, the syntax just differs: for a disjunction it is h.left', explanation: 'No: a disjunction has no halves to extract. Which side holds is exactly the thing you do not know.' },
+    { label: 'Because h.1 is a proof of A, and the goal needs the whole disjunction', explanation: 'That is not the problem: the problem is that no proof of A is available, and there is nowhere to get one.' },
+    { label: 'Because you do not know which side is true, so both cases have to be handled', explanation: 'Correct: a disjunction says "at least one" without saying which, so the goal has to be proved on both branches.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `theorem my_and_swap (A B : Prop) (h : A ∧ B) : B ∧ A` twice: as a one-liner and with tactics.
+2. Prove `theorem or_idem (A : Prop) (h : A ∨ A) : A`.
+3. Prove `theorem and_imp (A B C : Prop) (h : A ∧ B → C) : A → B → C`.
+4. Prove `theorem contrapositive (A B : Prop) (h : A → B) : ¬B → ¬A`.
+5. Prove `theorem and_or_distrib (A B C : Prop) (h : A ∧ (B ∨ C)) : (A ∧ B) ∨ (A ∧ C)`.
+6. Try to prove the converse De Morgan law: `¬(A ∧ B) → ¬A ∨ ¬B`. It will not go through — find out exactly where you get stuck.
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `⟨h.2, h.1⟩`, or `by constructor; · exact h.2; · exact h.1`.
+  2. `by cases h with | inl hA => exact hA | inr hA => exact hA` — both branches are identical, and you still have to walk both.
+  3. `by intro hA hB; exact h ⟨hA, hB⟩` — the pair is assembled right inside the argument.
+  4. `by intro hnB hA; exact hnB (h hA)` — given `A`, turn it into `B` and run that into `¬B`.
+  5. `by cases h.2 with | inl hB => exact Or.inl ⟨h.1, hB⟩ | inr hC => exact Or.inr ⟨h.1, hC⟩` — split on the **second half** of the pair and carry the first half along. It is in the chapter file as `and_or_distrib`.
+  6. It does not go through, and that is not a gap in your technique. Start as usual: `intro h` gives you `h : ¬(A ∧ B)` and the goal `¬A ∨ ¬B`. The goal is a disjunction, so the very next step is to pick a side — and that is where it dies. Take `left` and you owe a proof of `¬A`; all you know is that `A` and `B` do not both hold, which says nothing about `A` on its own. Take `right` and you are stuck in the mirror image. To choose you would first have to know whether `A` is true, and the principle that hands you that is the law of excluded middle: `A ∨ ¬A` for an arbitrary `A`. It is a classical extra, not something the constructive machinery of this chapter produces. Classically the statement is true, and Lean does have excluded middle available (`Classical.em`, and the `by_cases` tactic); we pick it up when we get to proof by contradiction.
+
+</details>
+
+## Summary
+
+- `A ∧ B` is a pair: built with `⟨_, _⟩` or `constructor`, taken apart with `.1` and `.2`.
+- `A ∨ B` is a choice: proved with `Or.inl`/`Or.inr` or the `left`/`right` tactics, and used only through case analysis with `cases`.
+- A disjunction is cheap to prove and expensive to use; a conjunction is the other way round.
+- `¬A` is `A → False`, so a negation is proved by `intro`.
+- Anything follows from a contradiction, but you only reach a contradiction when the assumptions are mutually exclusive.
+
+Next come the quantifiers: "for all" will turn out to be a familiar function, and "there exists" will demand an actual example.
+
+<LessonComplete client:visible lessonId="lean-connectives" />

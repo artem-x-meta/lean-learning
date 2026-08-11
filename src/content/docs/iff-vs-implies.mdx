@@ -1,0 +1,123 @@
+---
+title: '1.8 Equivalence and consequence'
+description: Extraneous roots come from the difference between ↔ and → — not a rule to memorise, but two different types.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="50–60 min" level="Base" prerequisites="connectives, case analysis, linarith and norm_num" />
+
+This is the chapter everything so far was leading up to.
+
+School teaches the rule: squaring an equation can introduce extraneous roots, so check your answer by substitution. The rule gets memorised; the reason rarely does. The reason is simple, and in Lean it is impossible to miss — **some transformations give an equivalence and some give only a consequence**, and those are literally two different types.
+
+<LearningGoals items={[
+  'prove an equivalence as two implications',
+  'tell apart transformations that preserve equivalence and ones that only give a consequence',
+  'explain extraneous roots as the loss of the backward implication',
+  'state the honest equivalence where the naive one is false',
+]} />
+
+## ↔ is two arrows
+
+Equivalence is not a primitive in Lean. `A ↔ B` is a pair of implications, one each way — which is why it is proved with the same `constructor` as a conjunction.
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="iff-intro" title="Equivalence for a linear equation" />
+
+Two branches, two directions. And out of a finished equivalence you can take either direction back:
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="iff-is-and" title="mp goes forward, mpr goes back" />
+
+`mp` is short for *modus ponens*, the forward direction; `mpr` is the same thing reversed.
+
+## Now square both sides
+
+From $x = 3$ it follows that $x^2 = 9$. That takes no work at all:
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="squaring-loses" title="The forward direction works" />
+
+The converse is false — and Lean lets you prove it false, by producing a counterexample:
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="squaring-counterexample" title="The backward direction is false" />
+
+The witness is $-3$. It satisfies the new equation $x^2 = 9$ and does not satisfy the original $x = 3$.
+
+<Concept type="idea" title="That is all an extraneous root is">
+  When you square an equation you travel **along the arrow, forwards**: every solution of the original equation is still a solution of the new one. But there is no arrow back, and the new equation may have solutions the original never had. Those are the extraneous ones.
+
+  The checking rule follows immediately. Since there is no way back, the only way to find out whether a candidate is genuine is to substitute it into the **original** equation.
+</Concept>
+
+## What an honest equivalence looks like
+
+If you want to keep the equivalence, you have to state the whole thing — with every root included:
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="honest-equivalence" title="x² = 9 is equivalent to x = 3 or x = −3" />
+
+Look at the shape of the proof. Forwards: factor, apply the rule "a product is zero only when one of the factors is", then argue by cases. Backwards: substitute each root and check it. That is exactly what you do on paper — except that here not a single step can be skipped.
+
+The rule about the product is `mul_eq_zero`, and in Mathlib it is itself an equivalence. Here only `.mp` is needed, which is a good habit to notice: an equivalence in the library is two theorems, and you pick the direction you want at the point of use.
+
+## The classic trap
+
+Take $\sqrt{x+7} = x - 5$. Square both sides and you get $x^2 - 11x + 18 = 0$, with roots $2$ and $9$.
+
+Now check them. At $x = 2$ the right-hand side of the original equation is $-3$, and a square root is never negative:
+
+<LeanSnippet file="DiveLean/Ch08/IffVsImplies.lean" region="extraneous-root" title="Two drops out, nine survives" />
+
+The second proof is spelled out step by step on purpose. $\sqrt{16} = 4$ is not justified by "obviously" but by the two facts Lean insists on: $16 = 4^2$ and $4 \ge 0$. That non-negativity condition is not paperwork — it is the very thing that cuts the extraneous root away.
+
+<Concept type="mistake" title="The check belongs in the original equation">
+  A common mistake is to substitute the candidates into the intermediate equation, the one obtained after the transformation. Both of them will fit it, naturally — that equation was built to have them as roots. The whole point of checking is to go back to the very first equation, the one there is no arrow back to.
+</Concept>
+
+<QuickCheck
+  client:visible
+  id="lean-why-extraneous"
+  question="Why does squaring an equation produce extraneous roots?"
+  correctIndex={1}
+  options={[
+    { label: 'Because squaring is non-linear, and non-linear steps always add solutions', explanation: 'Non-linearity is not the culprit: cubing is non-linear too, and it is an equivalence — it adds nothing.' },
+    { label: 'Because the step gives only a consequence: the arrow forwards exists, the arrow back does not', explanation: 'Correct: every solution of the original survives, but the new equation may have solutions of its own, and there is no way back.' },
+    { label: 'Because precision is lost along the way', explanation: 'These are exact transformations; nothing here is approximated.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `theorem shift_iff (x : ℝ) : x + 4 = 10 ↔ x = 6`.
+2. Prove `example (x : ℝ) : 3 * x = 12 ↔ x = 4`.
+3. Take the forward direction out of that equivalence: `example (x : ℝ) (h : x + 4 = 10) : x = 6`.
+4. Explain why $x^3 = y^3 \leftrightarrow x = y$ holds while the same statement with squares does not. Which property of the cube makes the difference?
+5. Prove `example : ¬(∀ x : ℝ, x ^ 2 = 4 → x = 2)`.
+6. Keep the intermediate equation $x^2 - 11x + 18 = 0$ from the chapter and change the original equation so that $9$ turns out to be the extraneous root and $2$ survives.
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `constructor`, then `intro h; linarith` in each branch — both directions are linear. It is in the chapter file as `shift_iff`.
+  2. The same shape: `linarith` closes it either way.
+  3. `(shift_iff x).mp h`.
+  4. The cube is strictly increasing, so different numbers have different cubes and the backward direction survives. The square is not injective — $x$ and $-x$ have the same square — so the arrow back is lost. The exponent as such is not the issue; what matters is whether the operation can be undone.
+  5. `by intro h; have : (-2 : ℝ) = 2 := h (-2) (by norm_num); norm_num at this` — the counterexample is $-2$, built exactly like `squaring_not_reversible` above.
+  6. $\sqrt{x+7} = 5 - x$. Squaring gives the same $x^2 - 11x + 18 = 0$, but now $x = 2$ passes ($\sqrt 9 = 3 = 5 - 2$) and $x = 9$ fails ($5 - 9 = -4$, and the root is $4$). Same intermediate equation, opposite verdicts — which is the entire argument for checking in the original: the squared equation does not remember which problem it came from.
+
+</details>
+
+## Summary
+
+- `A ↔ B` is a pair of implications: build it with `constructor`, take it apart with `.mp` and `.mpr`.
+- Squaring gives a consequence, not an equivalence: the arrow forwards exists, the arrow back does not.
+- An extraneous root is a solution of the transformed equation that was never a solution of the original one.
+- The check by substitution belongs in the original equation, precisely because you cannot travel back along the arrow.
+- The honest equivalence lists every case: $x^2 = 9 \leftrightarrow x = 3 \lor x = -3$.
+
+One chapter left. We put the whole toolkit together and prove that $\sqrt2$ is irrational.
+
+<LessonComplete client:visible lessonId="lean-iff" />

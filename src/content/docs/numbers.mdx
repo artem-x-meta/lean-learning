@@ -1,0 +1,124 @@
+---
+title: '1.5 Numbers and solvers'
+description: The tactics decide, norm_num and omega — what each one reaches, where it stops, and why divisibility is an existence claim.
+---
+
+import LessonMeta from '../../components/LessonMeta.astro';
+import LearningGoals from '../../components/LearningGoals.astro';
+import Concept from '../../components/Concept.astro';
+import LeanSnippet from '../../components/LeanSnippet.astro';
+import QuickCheck from '../../components/QuickCheck';
+import LessonComplete from '../../components/LessonComplete';
+
+<LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="quantifiers, ring and calc, case analysis" />
+
+So far we have proved everything by hand. But a large share of statements about numbers is too dull to be worth a human: check a remainder, compare two expressions, read a value off a linear condition. For those there are **solvers** — tactics that finish the job by themselves.
+
+They are useful exactly as far as you understand their limits. So here are three, and the place where each one breaks.
+
+<LearningGoals items={[
+  'check concrete numeric statements with decide',
+  'compute arithmetic, fractions and primality included, with norm_num',
+  'solve linear problems with variables and hypotheses using omega',
+  'write divisibility and recognise it as a statement about existence',
+]} />
+
+## decide: just compute
+
+If a statement is **decidable** — that is, its truth can be settled by a finite computation — then `decide` performs that computation.
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="decide-basic" title="Settled by computing" />
+
+The second line uses `∣`, the divisibility sign; it gets a section of its own below.
+
+The limitation follows straight from the definition. A statement about an arbitrary $n$ is not decidable: there are infinitely many numbers, and the search never ends. So `decide` only works where everything is concrete.
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="decide-limits" title="Concrete values only" />
+
+<Concept type="mistake" title="decide can stall on a true statement">
+  Decidable does not mean quick. Sometimes the check needs a search so large that Lean runs into its limits and gives up — even though the statement is true and checkable in principle. If `decide` is thinking suspiciously long, that is not a reason to wait: most likely you want a different tactic.
+</Concept>
+
+## norm_num: arithmetic in earnest
+
+`norm_num` is `decide` grown up into a specialist in numbers. It computes with fractions, compares, and moves between numeric types.
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="norm-num" title="Fractions and comparisons" />
+
+And it reaches things plain computation does not — checking primality, for one:
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="norm-num-prime" title="A number is prime" />
+
+## omega: linear problems with variables
+
+Here is the tactic that lifts the main restriction. `omega` works with **variables and hypotheses** — but only while everything stays linear: addition, subtraction, multiplication by a constant, comparisons, remainders.
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="omega" title="Variables and hypotheses" />
+
+Parity and remainders are linear as well, so `omega` takes such statements whole:
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="omega-parity" title="A sum of evens is even" />
+
+Notice what has been proved: a statement about **any** $a$ and $b$, not about particular ones. That is a different level from `decide`.
+
+<Concept type="idea" title="How to choose between the three">
+  Ask yourself: **are there variables in the statement?** No — take `decide` or `norm_num` (the second is cleverer). Yes — then ask whether the problem is linear. If it is, `omega`. If it is not, you are proving it yourself or looking for a more specialised tactic. Multiplying two variables makes the problem nonlinear, and `omega` refuses on the spot.
+</Concept>
+
+## Divisibility is existence
+
+The sign `∣` in `a ∣ b` is not the vertical bar on your keyboard but a separate symbol (in the editor you type `\dvd`). What it means is exactly the school definition: there exists a $c$ such that $b = a \cdot c$.
+
+Since it is an existence claim, it is proved by producing a witness — the same move as in the quantifiers chapter:
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="divides" title="Three divides twelve" />
+
+And transitivity of divisibility is just substituting one witness into the other:
+
+<LeanSnippet file="DiveLean/Ch05/Numbers.lean" region="divides-trans" title="Divisibility is transitive" />
+
+Read it like this: if $b = a \cdot x$ and $c = b \cdot y$, then $c = a \cdot (x \cdot y)$. The witness for the conclusion is the product of the two you were handed.
+
+<QuickCheck
+  client:visible
+  id="lean-which-solver"
+  question="Which tactic proves this: for all a and b, if a % 3 = 1 and b % 3 = 1 then (a + b) % 3 = 2?"
+  correctIndex={2}
+  options={[
+    { label: 'decide — the statement is about remainders, and those are computed', explanation: 'It will not work: a and b are variables, there are no concrete values, and checking every pair never ends.' },
+    { label: 'norm_num — it knows how to handle remainders', explanation: 'norm_num is strong on the arithmetic of concrete numbers, but hypotheses about variables are not its job.' },
+    { label: 'omega — there are variables and hypotheses, but everything is linear', explanation: 'Correct: addition and a remainder by a constant are linear, and omega takes hypotheses into account. This is precisely its case.' },
+  ]}
+/>
+
+## Practice
+
+1. Prove `example : (123 : Nat) % 10 = 3`.
+2. Prove `example : Nat.Prime 101`.
+3. Prove `example : (3 : ℚ) / 6 = 1 / 2`.
+4. Prove `theorem odd_plus_odd (a b : Nat) (ha : a % 2 = 1) (hb : b % 2 = 1) : (a + b) % 2 = 0`.
+5. Prove `theorem five_divides_twenty : (5 : Nat) ∣ 20`.
+6. Try to prove `theorem square_nonneg (n : Int) : n * n ≥ 0` with `omega`. Why does it not go through?
+
+<details>
+  <summary>Answers and notes</summary>
+
+  1. `by decide` — or `by norm_num`.
+  2. `by norm_num` — primality is beyond what plain `decide` can manage.
+  3. `by norm_num`.
+  4. `by omega` — this example is in the chapter file as `odd_plus_odd`.
+  5. `⟨4, rfl⟩` — the witness is four. Or `by decide`.
+  6. `omega` refuses: `n * n` is a product of two variables, and that is nonlinear. The statement is true, but it needs a different instrument; in the chapter on inequalities that instrument will be `nlinarith`, which is built to handle squares.
+
+</details>
+
+## Summary
+
+- `decide` settles decidable statements by computing — only about concrete values, and only while the search does not blow up.
+- `norm_num` is arithmetic in earnest: fractions, comparisons, primality.
+- `omega` works with variables and hypotheses while the problem is linear; multiplying variables puts it out of reach.
+- `a ∣ b` says a factor exists, so it is proved by producing a witness.
+
+Next comes induction: the only way to prove something about all natural numbers at once without checking them one by one.
+
+<LessonComplete client:visible lessonId="lean-numbers" />

@@ -1,0 +1,29 @@
+name: Verify Lean proofs
+
+# Every snippet shown on the site comes from these files, so this is the
+# check that keeps the course honest. It runs only when the Lake project
+# changes: a Mathlib build takes minutes and should not delay the site.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lean/**'
+      - '.github/workflows/lean.yml'
+  pull_request:
+    paths:
+      - 'lean/**'
+  workflow_dispatch:
+
+jobs:
+  lake-build:
+    name: lake build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          build: true
+          test: false
+          lint: false

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Lake build output: Mathlib and the compiled .olean files land here.
+lean/.lake/

@@ -1,0 +1,21 @@
+---
+import { langFromPath, t } from '../lib/i18n';
+
+interface Props {
+  title: string;
+  label?: string;
+}
+
+const { title, label } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+---
+
+<section class="dm-example">
+  <header class="dm-example__head">
+    <strong>{title}</strong>
+    <span class="dm-example__label">{label ?? t(lang, 'workedExample')}</span>
+  </header>
+  <div class="dm-example__body">
+    <slot />
+  </div>
+</section>

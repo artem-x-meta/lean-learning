@@ -1,0 +1,17 @@
+---
+import { langFromPath, t } from '../lib/i18n';
+
+interface Props {
+  items: string[];
+}
+
+const { items } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+---
+
+<aside class="dm-goals" aria-labelledby="goals-title">
+  <h2 id="goals-title" class="dm-goals__title"><span aria-hidden="true">◎</span> {t(lang, 'goalsTitle')}</h2>
+  <ul>
+    {items.map((item) => <li>{item}</li>)}
+  </ul>
+</aside>
