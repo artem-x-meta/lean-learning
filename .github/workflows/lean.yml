@@ -45,17 +45,17 @@ jobs:
 
       - run: npm ci
 
-      - name: Start the checker
-        run: npm run lean &
-
-      - name: Wait for the checker
+      # One step, not three: a process backgrounded in an earlier step is not
+      # guaranteed to still be there in a later one.
+      - name: Compile every kata as the reader receives it
         run: |
+          npm run lean &
           for _ in $(seq 1 30); do
-            curl -sf http://127.0.0.1:4322/ping && exit 0
+            curl -sf http://127.0.0.1:4322/ping >/dev/null && break
             sleep 1
           done
-          echo "The checker never came up." >&2
-          exit 1
-
-      - name: Compile every kata as the reader receives it
-        run: npm run verify:katas
+          curl -sf http://127.0.0.1:4322/ping >/dev/null || {
+            echo "The checker never came up." >&2
+            exit 1
+          }
+          npm run verify:katas
