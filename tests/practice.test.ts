@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { katas, kataItems, difficulties } from '../src/data/katas';
+import { katas, kataItems, difficulties, chapterOrder } from '../src/data/katas';
 import { kataSkeleton, kataSolution, kataStatement, normalizeCode, inlineCode } from '../src/lib/practice';
 
 /**
@@ -53,6 +53,17 @@ describe('practice catalogue', () => {
       }
     }
     expect(empty).toEqual([]);
+  });
+
+  it('lists chapters in the order the course teaches them, and covers every one', () => {
+    // A chapter missing from the order would sort to the front of every list.
+    expect(katas.filter((kata) => !chapterOrder.includes(kata.chapter)).map((k) => k.slug)).toEqual([]);
+
+    const covered = new Set(katas.map((kata) => kata.chapter));
+    expect(chapterOrder.filter((chapter) => !covered.has(chapter))).toEqual([]);
+
+    const positions = katas.map((kata) => chapterOrder.indexOf(kata.chapter));
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
   it('uses only declared difficulties, and uses all of them', () => {

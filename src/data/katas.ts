@@ -52,8 +52,20 @@ export interface Kata {
   hint: Record<Lang, string>;
 }
 
-/** Order is the order of the ladder: nothing needs a chapter you have not read. */
-export const katas: readonly Kata[] = Object.freeze<Kata[]>([
+/** The chapters, in the order the course teaches them. */
+export const chapterOrder: readonly string[] = [
+  'proof-as-object',
+  'connectives',
+  'quantifiers',
+  'rewriting',
+  'numbers',
+  'induction',
+  'inequalities',
+  'iff-vs-implies',
+  'sqrt-two',
+];
+
+const catalogue: Kata[] = [
   {
     slug: 'identity',
     region: 'identity',
@@ -285,7 +297,213 @@ export const katas: readonly Kata[] = Object.freeze<Kata[]>([
       ru: 'Разность — полный квадрат. Передай решателю `sq_nonneg (a - b)`, и у него будет всё необходимое.',
     },
   },
-]);
+  {
+    slug: 'compose',
+    region: 'compose',
+    difficulty: 'intro',
+    chapter: 'proof-as-object',
+    tactics: ['intro', 'exact'],
+    title: { en: 'Chaining two implications', ru: 'Цепочка из двух импликаций' },
+    brief: {
+      en: 'From `A` follows `B`, from `B` follows `C`; conclude that from `A` follows `C`. The step every argument in mathematics is made of.',
+      ru: 'Из `A` следует `B`, из `B` следует `C`; заключи, что из `A` следует `C`. Шаг, из которых состоит любое рассуждение.',
+    },
+    hint: {
+      en: 'An implication is a function, so `f a` is a proof of `B`. What do you do with it?',
+      ru: 'Импликация — функция, поэтому `f a` есть доказательство `B`. Что с ним сделать дальше?',
+    },
+  },
+  {
+    slug: 'not-not',
+    region: 'not-not',
+    difficulty: 'core',
+    chapter: 'connectives',
+    tactics: ['intro', 'exact'],
+    title: { en: 'Double negation, the easy half', ru: 'Двойное отрицание, лёгкая половина' },
+    brief: {
+      en: 'If `A` holds, then `¬¬A` holds. This direction is straightforward; the way back needs a principle this one does not, which is worth noticing.',
+      ru: 'Если `A` верно, то верно и `¬¬A`. Это направление простое — а обратное требует принципа, который здесь не нужен, и это стоит заметить.',
+    },
+    hint: {
+      en: '`¬¬A` unfolds to `(A → False) → False`. Introduce the refuter and give it what it asked for.',
+      ru: '`¬¬A` разворачивается в `(A → False) → False`. Введи опровергателя и дай ему ровно то, чего он просит.',
+    },
+  },
+  {
+    slug: 'or-elim',
+    region: 'or-elim',
+    difficulty: 'core',
+    chapter: 'connectives',
+    tactics: ['cases', 'exact'],
+    title: { en: 'Proof by cases', ru: 'Разбор случаев' },
+    brief: {
+      en: '`A` or `B` holds, and each of them leads to `C`. Conclude `C`. This is what "consider two cases" means, written so a machine accepts it.',
+      ru: 'Верно `A` или `B`, и каждое из них ведёт к `C`. Заключи `C`. Это и есть «рассмотрим два случая», записанное так, чтобы машина приняла.',
+    },
+    hint: {
+      en: 'Take the disjunction apart with `cases`. Each branch hands you one side and the matching way to reach `C`.',
+      ru: 'Разбери дизъюнкцию через `cases`. В каждой ветке у тебя одна из сторон и подходящий к ней способ добраться до `C`.',
+    },
+  },
+  {
+    slug: 'exists-witness',
+    region: 'exists-witness',
+    difficulty: 'intro',
+    chapter: 'quantifiers',
+    tactics: ['exact', 'rfl'],
+    title: { en: 'Naming a witness', ru: 'Предъявить свидетеля' },
+    brief: {
+      en: 'Some natural number squares to 49. Proving an existence statement means producing the thing — there is no other way.',
+      ru: 'Какое-то натуральное число в квадрате даёт 49. Доказать существование — значит предъявить сам объект, иначе никак.',
+    },
+    hint: {
+      en: '`⟨witness, proof⟩` builds an `∃`. Once the number is fixed, both sides are literals and the equality holds by computation.',
+      ru: '`⟨свидетель, доказательство⟩` собирает `∃`. Когда число подставлено, обе части — литералы, и равенство верно по вычислению.',
+    },
+  },
+  {
+    slug: 'counterexample',
+    region: 'counterexample',
+    difficulty: 'core',
+    chapter: 'quantifiers',
+    tactics: ['intro', 'omega'],
+    title: { en: 'One counterexample is enough', ru: 'Одного контрпримера достаточно' },
+    brief: {
+      en: 'It is not true that every natural number equals its own square. Refuting a `∀` costs exactly one number — the exercise is turning that into a proof.',
+      ru: 'Неверно, что каждое натуральное число равно своему квадрату. Опровержение `∀` стоит ровно одного числа — упражнение в том, чтобы превратить это в доказательство.',
+    },
+    hint: {
+      en: 'Assume the universal claim, then use it at a number where it fails. What you get is an arithmetic falsehood.',
+      ru: 'Прими всеобщее утверждение, а затем применяй его к числу, на котором оно ломается. Получится арифметическая ложь.',
+    },
+  },
+  {
+    slug: 'rewrite-twice',
+    region: 'rewrite-twice',
+    difficulty: 'intro',
+    chapter: 'rewriting',
+    tactics: ['rw'],
+    title: { en: 'Substituting equals', ru: 'Подстановка равного' },
+    brief: {
+      en: 'If `a = b`, then `a + a = b + b`. Equality lets you replace one by the other anywhere — and `rw` replaces every occurrence at once.',
+      ru: 'Если `a = b`, то `a + a = b + b`. Равенство позволяет заменять одно другим где угодно — а `rw` заменяет сразу все вхождения.',
+    },
+    hint: {
+      en: 'One rewrite is the whole proof: after it the two sides are literally the same, and `rw` closes such goals itself.',
+      ru: 'Одно переписывание — и всё: после него обе части буквально совпадают, а такие цели `rw` закрывает сам.',
+    },
+  },
+  {
+    slug: 'diff-of-squares',
+    imports: ['Mathlib.Tactic.Ring'],
+    region: 'diff-of-squares',
+    difficulty: 'core',
+    chapter: 'rewriting',
+    tactics: ['ring'],
+    title: { en: 'Difference of squares', ru: 'Разность квадратов' },
+    brief: {
+      en: '`(a − b)(a + b) = a² − b²` over the integers. The companion to the square of a sum, and proof that one tactic really does cover the family.',
+      ru: '`(a − b)(a + b) = a² − b²` над целыми. Пара к квадрату суммы — и подтверждение, что одна тактика действительно закрывает всё семейство.',
+    },
+    hint: {
+      en: 'Same tactic as the square of a sum. That is the point of the kata.',
+      ru: 'Та же тактика, что и в квадрате суммы. В этом и смысл задачи.',
+    },
+  },
+  {
+    slug: 'remainders',
+    region: 'remainders',
+    difficulty: 'intro',
+    chapter: 'numbers',
+    tactics: ['omega'],
+    title: { en: 'Even or odd', ru: 'Чётное или нечётное' },
+    brief: {
+      en: 'Every natural number leaves remainder 0 or 1 on division by 2. There is nothing to think about here — the point is that the machine agrees without being led.',
+      ru: 'Любое натуральное число даёт при делении на 2 остаток 0 или 1. Думать тут не над чем — смысл в том, что машина соглашается, и вести её за руку не нужно.',
+    },
+    hint: {
+      en: 'The solver for linear arithmetic knows what a remainder is. One word.',
+      ru: 'Решатель линейной арифметики знает, что такое остаток. Одно слово.',
+    },
+  },
+  {
+    slug: 'power-beats-linear',
+    region: 'power-beats-linear',
+    difficulty: 'tough',
+    chapter: 'induction',
+    tactics: ['induction', 'omega', 'Nat.pow_succ'],
+    title: { en: 'Doubling outruns counting', ru: 'Удвоение обгоняет счёт' },
+    brief: {
+      en: '`n + 1 ≤ 2ⁿ` for every natural `n`. Obvious as a picture, and a good lesson in helping a solver that cannot see powers.',
+      ru: '`n + 1 ≤ 2ⁿ` для любого натурального `n`. Очевидно на картинке — и хороший урок о том, как помочь решателю, который не видит степеней.',
+    },
+    hint: {
+      en: '`omega` treats `2 ^ k` as an unknown quantity, not as a power. Give it a `have` saying how the next power relates to this one, and it can finish.',
+      ru: '`omega` считает `2 ^ k` неизвестной величиной, а не степенью. Дай ему `have` о том, как следующая степень связана с текущей, — дальше он справится.',
+    },
+  },
+  {
+    slug: 'product-zero',
+    imports: ['Mathlib.Data.Real.Basic'],
+    region: 'product-zero',
+    difficulty: 'core',
+    chapter: 'iff-vs-implies',
+    tactics: ['rw', 'mul_eq_zero', 'sub_eq_zero'],
+    title: { en: 'A product is zero', ru: 'Произведение равно нулю' },
+    brief: {
+      en: '`(x − 1)(x − 2) = 0` exactly when `x = 1` or `x = 2`. The rule behind every factored equation you solved at school, and it is an equivalence in both directions.',
+      ru: '`(x − 1)(x − 2) = 0` тогда и только тогда, когда `x = 1` или `x = 2`. Правило, по которому в школе решают разложенные на множители уравнения, — и это равносильность в обе стороны.',
+    },
+    hint: {
+      en: 'Both steps are named lemmas, and both are equivalences — so the whole proof can be a chain of rewrites rather than a case split.',
+      ru: 'Оба шага — именованные леммы, и обе равносильности, — так что всё доказательство можно свести к цепочке переписываний, без разбора случаев.',
+    },
+  },
+  {
+    slug: 'no-largest',
+    region: 'no-largest',
+    difficulty: 'core',
+    chapter: 'sqrt-two',
+    tactics: ['intro', 'omega'],
+    title: { en: 'There is no largest number', ru: 'Наибольшего числа нет' },
+    brief: {
+      en: 'No natural number is greater than or equal to all of them. Euclid’s move, in miniature: assume there is one, then build something it fails on.',
+      ru: 'Никакое натуральное число не больше или равно всем сразу. Ход Евклида в миниатюре: предположи, что такое есть, и построй то, на чём оно ломается.',
+    },
+    hint: {
+      en: '`intro ⟨m, h⟩` assumes such an `m` and names the property. Then apply it to a number chosen to break it.',
+      ru: '`intro ⟨m, h⟩` предполагает такое `m` и даёт имя свойству. Дальше примени его к числу, подобранному так, чтобы свойство не выдержало.',
+    },
+  },
+  {
+    slug: 'nothing-between',
+    region: 'nothing-between',
+    difficulty: 'intro',
+    chapter: 'sqrt-two',
+    tactics: ['intro', 'omega'],
+    title: { en: 'Nothing between 3 and 4', ru: 'Между 3 и 4 ничего нет' },
+    brief: {
+      en: 'No natural number is strictly between 3 and 4. The shortest proof by contradiction there is: assume such a number, and the arithmetic refuses.',
+      ru: 'Никакое натуральное число не лежит строго между 3 и 4. Самое короткое доказательство от противного: предположи такое число — и арифметика откажет.',
+    },
+    hint: {
+      en: 'A negation is introduced like any implication, and an `∃ … ∧ …` can be taken apart right in the `intro` pattern.',
+      ru: 'Отрицание вводится как любая импликация, а `∃ … ∧ …` можно разобрать прямо в образце у `intro`.',
+    },
+  },
+];
+
+/**
+ * Sorted by chapter, so that inside a difficulty group the katas follow the
+ * ladder: nothing asks for a chapter you have not read. The sort is stable,
+ * so katas from one chapter keep the order they are written in above — which
+ * is also where a new one should be added.
+ */
+export const katas: readonly Kata[] = Object.freeze(
+  [...catalogue].sort(
+    (a, b) => chapterOrder.indexOf(a.chapter) - chapterOrder.indexOf(b.chapter),
+  ),
+);
 
 export const difficulties: readonly Difficulty[] = ['intro', 'core', 'tough'];
 

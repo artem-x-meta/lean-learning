@@ -45,7 +45,7 @@ const url = playgroundUrl(playgroundCode);
   {title && <figcaption class="dm-lean-snippet__title">{title}</figcaption>}
   <pre class="dm-lean-snippet__code"><code>{code}</code></pre>
   {/* Appears only when the local checker from `npm run lean` answers. */}
-  <LeanRunner client:visible code={playgroundCode} lang={lang} />
+  <LeanRunner client:visible code={playgroundCode} lang={lang} id={`${file}:${region ?? 'all'}`} />
 
   {playground && (
     <a class="dm-lean-snippet__playground" href={url} target="_blank" rel="noopener">

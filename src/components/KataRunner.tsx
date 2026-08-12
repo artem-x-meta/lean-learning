@@ -84,7 +84,9 @@ export default function KataRunner({
       const response = await fetch(`${endpoint}/check`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ code: draft }),
+        // The id keeps this kata on one document in the checker, so its imports
+        // are loaded once instead of on every attempt.
+        body: JSON.stringify({ code: draft, id: `kata-${slug}` }),
       });
       const result: Verdict = await response.json();
       setVerdict(result);

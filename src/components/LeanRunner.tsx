@@ -13,6 +13,8 @@ import { t, type Lang } from '../lib/i18n';
 interface Props {
   code: string;
   lang?: Lang;
+  /** Keeps this snippet on one document in the checker, so imports load once. */
+  id?: string;
   /** Where the local checker listens; matches scripts/lean-server.mjs. */
   endpoint?: string;
 }
@@ -26,7 +28,7 @@ interface Verdict {
 
 type Mode = 'probing' | 'absent' | 'ready';
 
-export default function LeanRunner({ code, lang = 'en', endpoint = 'http://127.0.0.1:4322' }: Props) {
+export default function LeanRunner({ code, lang = 'en', id, endpoint = 'http://127.0.0.1:4322' }: Props) {
   const [mode, setMode] = useState<Mode>('probing');
   const [draft, setDraft] = useState(code);
   const [busy, setBusy] = useState(false);
@@ -57,7 +59,7 @@ export default function LeanRunner({ code, lang = 'en', endpoint = 'http://127.0
       const response = await fetch(`${endpoint}/check`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ code: draft }),
+        body: JSON.stringify({ code: draft, id }),
       });
       setVerdict(await response.json());
     } catch (error) {

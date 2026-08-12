@@ -99,4 +99,64 @@ theorem linear_iff (x : ℝ) : 3 * x - 6 = 0 ↔ x = 2 := by
   sorry
 -- END: linear-iff
 
+-- BEGIN: compose
+theorem compose (A B C : Prop) (f : A → B) (g : B → C) : A → C := by
+  sorry
+-- END: compose
+
+-- BEGIN: not-not
+theorem not_not_intro (A : Prop) (h : A) : ¬¬A := by
+  sorry
+-- END: not-not
+
+-- BEGIN: or-elim
+theorem or_elim (A B C : Prop) (h : A ∨ B) (ha : A → C) (hb : B → C) : C := by
+  sorry
+-- END: or-elim
+
+-- BEGIN: exists-witness
+theorem exists_witness : ∃ n : Nat, n * n = 49 := by
+  sorry
+-- END: exists-witness
+
+-- BEGIN: counterexample
+theorem not_square_fixed : ¬ ∀ n : Nat, n * n = n := by
+  sorry
+-- END: counterexample
+
+-- BEGIN: rewrite-twice
+theorem rewrite_twice (a b : Nat) (h : a = b) : a + a = b + b := by
+  sorry
+-- END: rewrite-twice
+
+-- BEGIN: diff-of-squares
+theorem diff_of_squares (a b : ℤ) : (a - b) * (a + b) = a ^ 2 - b ^ 2 := by
+  sorry
+-- END: diff-of-squares
+
+-- BEGIN: remainders
+theorem remainders (n : Nat) : n % 2 = 0 ∨ n % 2 = 1 := by
+  sorry
+-- END: remainders
+
+-- BEGIN: power-beats-linear
+theorem power_beats_linear (n : Nat) : n + 1 ≤ 2 ^ n := by
+  sorry
+-- END: power-beats-linear
+
+-- BEGIN: product-zero
+theorem product_zero (x : ℝ) : (x - 1) * (x - 2) = 0 ↔ x = 1 ∨ x = 2 := by
+  sorry
+-- END: product-zero
+
+-- BEGIN: no-largest
+theorem no_largest : ¬ ∃ m : Nat, ∀ n : Nat, n ≤ m := by
+  sorry
+-- END: no-largest
+
+-- BEGIN: nothing-between
+theorem nothing_between : ¬ ∃ n : Nat, 3 < n ∧ n < 4 := by
+  sorry
+-- END: nothing-between
+
 end Practice

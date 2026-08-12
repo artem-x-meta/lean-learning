@@ -32,11 +32,13 @@ interface Verdict {
   output: string;
 }
 
-async function check(code: string): Promise<Verdict> {
+async function check(code: string, id: string): Promise<Verdict> {
   const response = await fetch(`${ENDPOINT}/check`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ code }),
+    // The same id the page sends, so this exercises the path a reader takes:
+    // one document per kata, imports loaded once, then edited.
+    body: JSON.stringify({ code, id: `kata-${id}` }),
   });
   return response.json() as Promise<Verdict>;
 }
@@ -58,11 +60,11 @@ describe('every kata, as the reader receives it', () => {
     it(
       `${kata.slug}: the skeleton is refused, the reference proof is accepted`,
       async () => {
-        const blank = await check(kataSkeleton(kata));
+        const blank = await check(kataSkeleton(kata), kata.slug);
         expect(blank.hasSorry, `${kata.slug} skeleton: ${blank.output}`).toBe(true);
         expect(blank.ok).toBe(false);
 
-        const solved = await check(kataReference(kata));
+        const solved = await check(kataReference(kata), kata.slug);
         expect(solved.ok, `${kata.slug} reference: ${solved.output}`).toBe(true);
         expect(solved.hasSorry).toBe(false);
       },

@@ -54,9 +54,21 @@ A proof containing `sorry` is reported as unsolved, not as compiling. That disti
 
 > The checker executes arbitrary Lean code, and Lean can do IO. It binds to `127.0.0.1` deliberately. Do not put it on a network you do not control.
 
+### Why it is fast
+
+The obvious implementation — `lake env lean` per check — takes about five seconds on a core-only file and fifteen with Mathlib. Two things account for nearly all of that, and neither is your proof:
+
+**Lake itself costs ~3.4s per invocation**, reading the lakefile and manifest. So the environment is captured once at startup and `lean` is run directly with it.
+
+**Imports are reloaded every time a process starts.** The checker therefore drives a Lean *language server* that stays running, with one document per kata: the first check of a kata loads its imports, and every attempt after that is re-elaborated against them. In practice a repeat check lands in about **0.2s**, Mathlib included — the same reason your editor stays responsive.
+
+Open documents are capped at three (`LEAN_MAX_DOCS`), least-recently-used closed first. Each one is a worker process holding its own copy of the imported environment, and Mathlib is not small: leaving one open per kata ran the machine out of memory partway through checking them all. Three is plenty for an activity you do one kata at a time.
+
+If the language server cannot be started, checks fall back to one process per check. Slower, still correct. The same happens for a single kata whose worker crashes — Lean does that occasionally, and one dead worker should not cost every other kata its loaded imports.
+
 ## Practice
 
-Fourteen katas under [`/practice/`](https://artem-x-meta.github.io/lean-learning/practice/): a statement with its proof replaced by `sorry`, and the hole is yours to remove. Each is reachable from a chapter already read, and each names which one.
+Katas under [`/practice/`](https://artem-x-meta.github.io/lean-learning/practice/), covering every chapter: a statement with its proof replaced by `sorry`, and the hole is yours to remove. Each is reachable from a chapter already read, and each names which one.
 
 They are not markdown. A kata is an entry in `src/data/katas.ts` pointing at two regions of the same name — the statement in `lean/DiveLean/Practice/Statements.lean` and the reference proof in `Solutions.lean`. Both files are in the library root, so `lake build` compiles them: **a kata that cannot be proved fails CI before anyone is asked to prove it.**
 

@@ -11,12 +11,16 @@ on:
       - 'lean/**'
       - 'src/data/katas.ts'
       - 'src/lib/practice.ts'
+      - 'scripts/lean-*.mjs'
+      - 'tests/katas.live.ts'
       - '.github/workflows/lean.yml'
   pull_request:
     paths:
       - 'lean/**'
       - 'src/data/katas.ts'
       - 'src/lib/practice.ts'
+      - 'scripts/lean-*.mjs'
+      - 'tests/katas.live.ts'
   workflow_dispatch:
 
 jobs:

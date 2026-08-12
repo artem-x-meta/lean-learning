@@ -35,10 +35,12 @@ export default function KataList({ items, lang = 'en' }: Props) {
 
   return (
     <div className="dm-katas not-content">
+      {/* The count comes from the catalogue, so no page has to be edited when
+          a kata is added — and none can be wrong about how many there are. */}
       <p className="dm-katas__progress">
         {ready && done > 0
           ? tv(lang, 'kataProgress', { done, total: items.length })
-          : t(lang, 'kataEmptyDone')}
+          : tv(lang, 'kataTotal', { total: items.length })}
       </p>
 
       {difficulties.map((level) => {
