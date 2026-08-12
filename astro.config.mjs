@@ -62,6 +62,11 @@ export default defineConfig({
             slug,
           })),
         },
+        {
+          label: 'Practice',
+          translations: { ru: 'Практика' },
+          items: [{ label: 'Katas', translations: { ru: 'Задачи' }, slug: 'practice' }],
+        },
       ],
     }),
   ],

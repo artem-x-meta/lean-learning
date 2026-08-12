@@ -800,3 +800,281 @@ fieldset.dm-geometry-challenge > .dm-button {
 .dm-lean-runner__verdict[data-status='fail'] strong {
   color: var(--dm-coral, crimson);
 }
+
+/* ── Practice: the catalogue ────────────────────────────────────────────── */
+
+.dm-katas {
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 2rem;
+}
+
+.dm-katas__progress {
+  margin: 0;
+  color: var(--dm-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dm-katas__group {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.dm-katas__level {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.dm-katas__level[data-level='intro'] { color: var(--dm-teal); }
+.dm-katas__level[data-level='core'] { color: var(--dm-violet); }
+.dm-katas__level[data-level='tough'] { color: var(--dm-coral); }
+
+.dm-katas__list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dm-katas__link {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--dm-line);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.dm-katas__link:hover {
+  border-color: var(--dm-violet);
+  background: color-mix(in srgb, var(--dm-surface) 80%, var(--dm-violet-soft));
+}
+
+/* A solved kata is marked by the tick, not by fading out: it stays readable. */
+.dm-katas__item[data-solved='true'] .dm-katas__tick {
+  color: var(--dm-success-strong);
+}
+
+.dm-katas__tick {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.dm-katas__body { display: grid; gap: 0.3rem; }
+.dm-katas__title { font-size: 1rem; }
+
+.dm-katas__brief {
+  color: var(--dm-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.dm-katas__tactics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.dm-katas__tactics code {
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--dm-violet-soft);
+  color: var(--dm-violet-dark);
+  font-size: 0.75rem;
+}
+
+/* ── Practice: one kata ─────────────────────────────────────────────────── */
+
+.dm-kata-page__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  align-items: baseline;
+  margin: 0 0 1.2rem;
+  color: var(--dm-muted);
+  font-size: 0.82rem;
+}
+
+.dm-kata-page__level {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--dm-status-bg);
+  color: var(--dm-status-fg);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dm-kata-page__level[data-level='intro'] { background: var(--dm-teal-soft); color: var(--dm-teal); }
+.dm-kata-page__level[data-level='core'] { background: var(--dm-violet-soft); color: var(--dm-violet-dark); }
+.dm-kata-page__level[data-level='tough'] { background: var(--dm-coral-soft); color: var(--dm-coral); }
+
+.dm-kata-page__tactics code { margin-right: 0.3rem; font-size: 0.78rem; }
+.dm-kata-page__brief { font-size: 1.02rem; line-height: 1.7; }
+
+.dm-kata-page__aside {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--dm-line);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-surface);
+}
+
+.dm-kata-page__aside summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--dm-violet);
+}
+
+.dm-kata-page__warn {
+  margin: 0.6rem 0 0;
+  color: var(--dm-muted);
+  font-size: 0.85rem;
+}
+
+.dm-kata-page__solution {
+  margin: 0.6rem 0 0;
+  overflow-x: auto;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.dm-kata-page__back { margin-top: 2rem; font-size: 0.9rem; }
+
+/* ── Practice: the working surface ──────────────────────────────────────── */
+
+.dm-kata {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--dm-line);
+  border-radius: var(--dm-radius);
+  background: var(--dm-paper);
+}
+
+.dm-kata[data-solved='true'] { border-color: var(--dm-success-strong); }
+
+.dm-kata__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.9rem;
+}
+
+.dm-kata__state {
+  color: var(--dm-success-strong);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.dm-kata__editor {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--dm-line);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-surface);
+  color: var(--dm-ink);
+  font-family: var(--sl-font-mono, monospace);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+  tab-size: 2;
+}
+
+.dm-kata__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.dm-kata__playground {
+  color: var(--dm-violet);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dm-kata__warn {
+  margin: 0;
+  padding: 0.55rem 0.8rem;
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-coral-soft);
+  color: var(--dm-coral);
+  font-size: 0.85rem;
+}
+
+.dm-kata__offline {
+  margin: 0;
+  color: var(--dm-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.dm-kata__offline strong { color: var(--dm-ink); }
+
+.dm-kata__verdict pre {
+  margin: 0.5rem 0 0;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.dm-kata__verdict[data-status='ok'] strong { color: var(--dm-success-strong); }
+.dm-kata__verdict[data-status='fail'] strong { color: var(--dm-coral); }
+
+.dm-kata__auto {
+  margin-left: 0.5rem;
+  color: var(--dm-muted);
+  font-size: 0.82rem;
+}
+
+/* ── Practice: the pointer at the end of a chapter ──────────────────────── */
+
+.dm-chapter-katas {
+  margin: 2rem 0 0;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--dm-line);
+  border-left: 3px solid var(--dm-violet);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-surface);
+}
+
+.dm-chapter-katas__title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dm-violet);
+}
+
+.dm-chapter-katas__hint {
+  margin: 0.35rem 0 0.6rem;
+  color: var(--dm-muted);
+  font-size: 0.9rem;
+}
+
+.dm-chapter-katas__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.92rem;
+}

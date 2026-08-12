@@ -1,0 +1,68 @@
+---
+/**
+ * One kata: statement, working surface, hint, reference proof.
+ *
+ * Both locales render through here, so the two route files stay thin and the
+ * pages cannot drift apart. The code shown is not written in this file — it is
+ * read out of the Lean project, the same project `lake build` verifies.
+ */
+import { getEntry } from 'astro:content';
+import { t, type Lang } from '../lib/i18n';
+import { withBase } from '../lib/basePath';
+import { kataSkeleton, kataSolution, kataStatement, inlineCode } from '../lib/practice';
+import type { Kata } from '../data/katas';
+import KataRunner from './KataRunner';
+
+interface Props {
+  kata: Kata;
+  lang: Lang;
+}
+
+const { kata, lang } = Astro.props;
+
+const skeleton = kataSkeleton(kata);
+const solution = kataSolution(kata);
+const statement = kataStatement(kata);
+
+const prefix = lang === 'ru' ? '/ru' : '';
+const chapterHref = withBase(`${prefix}/${kata.chapter}/`);
+const backHref = withBase(`${prefix}/practice/`);
+
+// Тайтл главы берём из самой главы, чтобы он не разъезжался с оглавлением.
+const chapterId = lang === 'ru' ? `ru/${kata.chapter}` : kata.chapter;
+const chapter = await getEntry('docs', chapterId);
+const chapterTitle = chapter?.data.title ?? kata.chapter;
+
+const levelKey = { intro: 'diffIntro', core: 'diffCore', tough: 'diffTough' } as const;
+---
+
+<div class="dm-kata-page">
+  <p class="dm-kata-page__meta not-content">
+    <span class="dm-kata-page__level" data-level={kata.difficulty}>{t(lang, levelKey[kata.difficulty])}</span>
+    <span class="dm-kata-page__chapter">
+      {t(lang, 'kataFrom')}: <a href={chapterHref}>{chapterTitle}</a>
+    </span>
+    <span class="dm-kata-page__tactics">
+      {t(lang, 'kataTactics')}: {kata.tactics.map((tactic) => <code>{tactic}</code>)}
+    </span>
+  </p>
+
+  <p class="dm-kata-page__brief" set:html={inlineCode(kata.brief[lang])} />
+
+  <KataRunner client:load slug={kata.slug} skeleton={skeleton} statement={statement} lang={lang} />
+
+  <details class="dm-kata-page__aside">
+    <summary>{t(lang, 'kataHint')}</summary>
+    <p set:html={inlineCode(kata.hint[lang])} />
+  </details>
+
+  <details class="dm-kata-page__aside">
+    <summary>{t(lang, 'kataSolutionShow')}</summary>
+    <p class="dm-kata-page__warn">{t(lang, 'kataSolutionWarn')}</p>
+    <pre class="dm-kata-page__solution"><code>{solution}</code></pre>
+  </details>
+
+  <p class="dm-kata-page__back not-content">
+    <a href={backHref}>← {t(lang, 'kataBack')}</a>
+  </p>
+</div>

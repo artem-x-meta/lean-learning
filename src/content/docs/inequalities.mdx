@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="the omega and norm_num solvers, ring, calc" />
 
@@ -115,5 +116,7 @@ Work in the playground: open any snippet above, clear it and write your own.
 - An unused hypothesis is a signal: the statement probably holds more generally than you stated it.
 
 Next comes the chapter all of this was worth learning for: the difference between equivalence and consequence.
+
+<ChapterKatas chapter="inequalities" />
 
 <LessonComplete client:visible lessonId="lean-inequalities" />

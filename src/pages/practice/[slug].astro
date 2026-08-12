@@ -1,0 +1,28 @@
+---
+/**
+ * A kata page per entry in the catalogue.
+ *
+ * These are generated rather than written as fourteen markdown files: the
+ * content of a kata is data plus code read from `lean/`, and duplicating that
+ * across two locales by hand is how the two versions start to disagree.
+ */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import KataArticle from '../../components/KataArticle.astro';
+import { katas } from '../../data/katas';
+
+export function getStaticPaths() {
+  return katas.map((kata) => ({ params: { slug: kata.slug }, props: { kata } }));
+}
+
+const { kata } = Astro.props;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: kata.title.en,
+    description: kata.brief.en.replace(/`/g, ''),
+    tableOfContents: false,
+  }}
+>
+  <KataArticle kata={kata} lang="en" />
+</StarlightPage>

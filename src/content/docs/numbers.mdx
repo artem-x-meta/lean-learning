@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="quantifiers, ring and calc, case analysis" />
 
@@ -120,5 +121,7 @@ Read it like this: if $b = a \cdot x$ and $c = b \cdot y$, then $c = a \cdot (x 
 - `a ∣ b` says a factor exists, so it is proved by producing a witness.
 
 Next comes induction: the only way to prove something about all natural numbers at once without checking them one by one.
+
+<ChapterKatas chapter="numbers" />
 
 <LessonComplete client:visible lessonId="lean-numbers" />

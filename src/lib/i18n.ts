@@ -39,6 +39,27 @@ export const ui = {
     runnerOk: 'Compiles.',
     runnerFail: 'Does not compile.',
     runnerSorry: 'Still contains sorry.',
+    diffIntro: 'Warm-up',
+    diffCore: 'Core',
+    diffTough: 'Tough',
+    kataFrom: 'Chapter',
+    kataTactics: 'Tactics',
+    kataHint: 'Hint',
+    kataSolutionShow: 'Reference solution',
+    kataSolutionWarn: 'One way of doing it, not the only one. Yours may well be shorter.',
+    kataSolved: 'Solved',
+    kataMark: 'Mark as solved',
+    kataUnmark: 'Remove the mark',
+    kataOffline: 'No local checker, so this page cannot tell you whether the proof is right.',
+    kataOfflineHow: 'Run the course on your own machine — `npm run dev` alongside `npm run lean` — and a verdict appears here. Otherwise, solve it in the playground and mark it yourself.',
+    kataProgress: '{done} of {total} solved',
+    kataBack: 'All katas',
+    kataTampered: 'The statement is no longer the one in the task. Reset it, or a verdict would mean nothing.',
+    kataAuto: 'Marked automatically — it compiled.',
+    kataEmptyDone: 'Nothing solved yet.',
+    kataEditor: 'Your proof',
+    chapterKatasTitle: 'Practice for this chapter',
+    chapterKatasHint: 'You have read the proofs. Now write them.',
   },
   ru: {
     goalsTitle: 'После главы ты сможешь',
@@ -63,9 +84,39 @@ export const ui = {
     runnerOk: 'Компилируется.',
     runnerFail: 'Не компилируется.',
     runnerSorry: 'Внутри остался sorry.',
+    diffIntro: 'Разминка',
+    diffCore: 'Основные',
+    diffTough: 'Посложнее',
+    kataFrom: 'Глава',
+    kataTactics: 'Тактики',
+    kataHint: 'Подсказка',
+    kataSolutionShow: 'Эталонное решение',
+    kataSolutionWarn: 'Один из способов, не единственный. Твой вполне может быть короче.',
+    kataSolved: 'Решено',
+    kataMark: 'Отметить решённой',
+    kataUnmark: 'Снять отметку',
+    kataOffline: 'Локального проверяльщика нет, поэтому страница не может сказать, верно ли доказательство.',
+    kataOfflineHow: 'Запусти курс у себя — `npm run dev` вместе с `npm run lean`, — и вердикт появится здесь. Иначе решай в песочнице и отмечай сам.',
+    kataProgress: 'решено {done} из {total}',
+    kataBack: 'Все задачи',
+    kataTampered: 'Формулировка больше не та, о которой задача. Верни исходную — иначе вердикт ничего не значит.',
+    kataAuto: 'Отмечено автоматически — скомпилировалось.',
+    kataEmptyDone: 'Пока ничего не решено.',
+    kataEditor: 'Твоё доказательство',
+    chapterKatasTitle: 'Задачи по этой главе',
+    chapterKatasHint: 'Доказательства прочитаны. Теперь напиши их сам.',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
 export function t(lang: Lang, key: keyof (typeof ui)['en']): string {
   return ui[lang][key];
+}
+
+/** Same, with `{name}` placeholders filled in — word order differs between the two languages. */
+export function tv(
+  lang: Lang,
+  key: keyof (typeof ui)['en'],
+  vars: Record<string, string | number>,
+): string {
+  return t(lang, key).replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? ''));
 }

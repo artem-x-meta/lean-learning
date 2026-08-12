@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="40–50 минут" level="База" prerequisites="кванторы, ring и calc, разбор случаев" />
 
@@ -119,5 +120,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - `a ∣ b` — это существование множителя, поэтому доказывается предъявлением свидетеля.
 
 Дальше — индукция: единственный способ доказать что-то сразу про все натуральные числа, не перебирая их.
+
+<ChapterKatas chapter="numbers" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-numbers" />

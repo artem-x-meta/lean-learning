@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="40–50 минут" level="База" prerequisites="решатели omega и norm_num, ring, calc" />
 
@@ -108,5 +109,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Неиспользованная гипотеза — сигнал, что утверждение верно в большей общности.
 
 Дальше — глава, ради которой стоило всё это осваивать: разница между равносильностью и следствием.
+
+<ChapterKatas chapter="inequalities" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-inequalities" />

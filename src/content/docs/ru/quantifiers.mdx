@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="45–55 минут" level="База" prerequisites="связки, intro и exact, разбор случаев через cases" />
 
@@ -123,5 +124,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Опровергнуть всеобщее утверждение можно одним контрпримером — это дёшево, и стоит пробовать до того, как строить доказательство.
 
 Дальше — равенства: научимся переписывать одно выражение через другое и увидим, как Lean раскрывает скобки за нас.
+
+<ChapterKatas chapter="quantifiers" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-quantifiers" />

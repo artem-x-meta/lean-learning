@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="50–60 минут" level="База" prerequisites="связки, linarith и norm_num, разбор случаев" />
 
@@ -118,5 +119,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Честная равносильность записывается перечислением всех случаев: $x^2 = 9 \leftrightarrow x = 3 \lor x = -3$.
 
 Осталась последняя глава — соберём всё вместе и докажем, что $\sqrt{2}$ иррационален.
+
+<ChapterKatas chapter="iff-vs-implies" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-iff" />

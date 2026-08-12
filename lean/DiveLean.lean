@@ -9,3 +9,5 @@ import DiveLean.Ch06.Induction
 import DiveLean.Ch07.Inequalities
 import DiveLean.Ch08.IffVsImplies
 import DiveLean.Ch09.SqrtTwo
+import DiveLean.Practice.Statements
+import DiveLean.Practice.Solutions

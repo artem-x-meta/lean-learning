@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="connectives, intro and exact, case analysis with cases" />
 
@@ -122,5 +123,7 @@ The converse — "if not for every, then a refuting object exists" — is a hard
 - One counterexample refutes a universal statement. That is cheap, so try it before you set about building a proof.
 
 Next come equalities: rewriting one expression as another, and watching Lean expand the brackets for us.
+
+<ChapterKatas chapter="quantifiers" />
 
 <LessonComplete client:visible lessonId="lean-quantifiers" />

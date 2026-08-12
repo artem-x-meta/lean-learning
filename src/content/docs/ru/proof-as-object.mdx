@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="40–50 минут" level="База" prerequisites="ничего, кроме готовности читать незнакомый синтаксис" />
 
@@ -139,5 +140,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - `by` включает режим тактик: `intro` переносит посылку в контекст, `exact` закрывает цель готовым доказательством.
 
 Дальше добавим к импликации остальные связки — «и», «или», отрицание — и научимся разбирать случаи.
+
+<ChapterKatas chapter="proof-as-object" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-proof-as-object" />

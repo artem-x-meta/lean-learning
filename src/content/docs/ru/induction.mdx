@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="50–60 минут" level="База" prerequisites="calc и ring, решатели omega и decide, кванторы" />
 
@@ -117,5 +118,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Рекурсия и индукция — одна конструкция: обе опираются на то, что аргумент уменьшается.
 
 Дальше — неравенства: решатели, которые умеют то, чего не умеет `omega`, включая квадраты.
+
+<ChapterKatas chapter="induction" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-induction" />

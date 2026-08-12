@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="55–65 min" level="Base" prerequisites="the whole course: connectives, quantifiers, ring, omega, induction" />
 
@@ -118,5 +119,7 @@ And a small thing that catches people out: to claim $(\sqrt{2})^2 = 2$ you need 
 ## Where to go next
 
 The course ends here. Lean does not. The natural next steps: [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/) — the large official textbook, [the Natural Number Game](https://adam.math.hhu.de/) — a game in which the whole of arithmetic is built from nothing, and [the community Zulip](https://leanprover.zulipchat.com/), where beginners' questions get friendly and fast answers.
+
+<ChapterKatas chapter="sqrt-two" />
 
 <LessonComplete client:visible lessonId="lean-sqrt-two" />

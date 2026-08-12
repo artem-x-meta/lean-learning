@@ -2,16 +2,21 @@ name: Verify Lean proofs
 
 # Every snippet shown on the site comes from these files, so this is the
 # check that keeps the course honest. It runs only when the Lake project
-# changes: a Mathlib build takes minutes and should not delay the site.
+# or the practice wiring changes: a Mathlib build takes minutes and should
+# not delay the site.
 on:
   push:
     branches: [main]
     paths:
       - 'lean/**'
+      - 'src/data/katas.ts'
+      - 'src/lib/practice.ts'
       - '.github/workflows/lean.yml'
   pull_request:
     paths:
       - 'lean/**'
+      - 'src/data/katas.ts'
+      - 'src/lib/practice.ts'
   workflow_dispatch:
 
 jobs:
@@ -27,3 +32,30 @@ jobs:
           build: true
           test: false
           lint: false
+
+      # `lake build` proves the reference solutions inside the library, where
+      # the imports and the namespace are already in place. The reader gets
+      # something else: a fragment reassembled with its own preamble. This runs
+      # that reassembled code — the skeleton must be refused for still holding
+      # a hole, and the reference proof must be accepted.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start the checker
+        run: npm run lean &
+
+      - name: Wait for the checker
+        run: |
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4322/ping && exit 0
+            sleep 1
+          done
+          echo "The checker never came up." >&2
+          exit 1
+
+      - name: Compile every kata as the reader receives it
+        run: npm run verify:katas

@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="50–60 min" level="Base" prerequisites="connectives, case analysis, linarith and norm_num" />
 
@@ -119,5 +120,7 @@ The second proof is spelled out step by step on purpose. $\sqrt{16} = 4$ is not 
 - The honest equivalence lists every case: $x^2 = 9 \leftrightarrow x = 3 \lor x = -3$.
 
 One chapter left. We put the whole toolkit together and prove that $\sqrt2$ is irrational.
+
+<ChapterKatas chapter="iff-vs-implies" />
 
 <LessonComplete client:visible lessonId="lean-iff" />

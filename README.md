@@ -54,6 +54,23 @@ A proof containing `sorry` is reported as unsolved, not as compiling. That disti
 
 > The checker executes arbitrary Lean code, and Lean can do IO. It binds to `127.0.0.1` deliberately. Do not put it on a network you do not control.
 
+## Practice
+
+Fourteen katas under [`/practice/`](https://artem-x-meta.github.io/lean-learning/practice/): a statement with its proof replaced by `sorry`, and the hole is yours to remove. Each is reachable from a chapter already read, and each names which one.
+
+They are not markdown. A kata is an entry in `src/data/katas.ts` pointing at two regions of the same name — the statement in `lean/DiveLean/Practice/Statements.lean` and the reference proof in `Solutions.lean`. Both files are in the library root, so `lake build` compiles them: **a kata that cannot be proved fails CI before anyone is asked to prove it.**
+
+What the library build does *not* cover is the code a reader is handed, which is reassembled from fragments with its own imports and namespace. That is what the live suite checks — for every kata, twice:
+
+```sh
+npm run lean            # in one terminal
+npm run verify:katas    # in another
+```
+
+The untouched skeleton must be **rejected** for still holding a hole, and the same skeleton with the reference proof in it must be **accepted**. It is not part of `npm test`: it needs a real Lean, and a suite that quietly skips itself is worse than one you have to ask for.
+
+Progress is a mark in the browser and nothing else. With the checker running, that mark is set by the machine when your proof compiles; without it, you set it yourself. The page also keeps the statement it gave you and says so if your draft no longer contains it — otherwise "it compiles" could be true of a question nobody asked.
+
 ## The Lean project
 
 ```sh

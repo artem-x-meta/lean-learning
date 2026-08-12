@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="45–55 минут" level="База" prerequisites="утверждение как тип, доказательство как значение, intro и exact" />
 
@@ -134,5 +135,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Из противоречия следует что угодно, но добраться до противоречия можно лишь при взаимоисключающих посылках.
 
 Дальше — кванторы: «для любого» окажется знакомой функцией, а «существует» потребует предъявить пример.
+
+<ChapterKatas chapter="connectives" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-connectives" />

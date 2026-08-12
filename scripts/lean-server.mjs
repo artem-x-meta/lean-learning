@@ -20,6 +20,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verdictOf } from './lean-verdict.mjs';
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const leanRoot = join(projectRoot, 'lean');
@@ -62,9 +63,7 @@ async function checkCode(code) {
         clearTimeout(timer);
         // Lean reports diagnostics with the temp path; strip it for readability.
         const output = `${stdout}${stderr}`.split(file).join('Snippet.lean').trim();
-        // Lean writes the word in backticks; a proof with a hole is not a proof.
-        const hasSorry = /declaration uses [`'"]sorry[`'"]/.test(output);
-        resolve({ ok: exitCode === 0 && !hasSorry, hasSorry, output });
+        resolve(verdictOf(output, exitCode));
       });
     });
   } finally {

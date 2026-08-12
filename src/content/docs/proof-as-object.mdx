@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="40–50 min" level="Base" prerequisites="nothing but a willingness to read unfamiliar syntax" />
 
@@ -138,5 +139,7 @@ Work in the playground: open any snippet above, clear it and write your own.
 - `by` enters tactic mode: `intro` moves a hypothesis into the context, `exact` closes the goal with a finished proof.
 
 Next we add the remaining connectives — "and", "or", "not" — and learn to argue by cases.
+
+<ChapterKatas chapter="proof-as-object" />
 
 <LessonComplete client:visible lessonId="lean-proof-as-object" />

@@ -1,0 +1,22 @@
+---
+/** Русская половина тренажёра; вся разметка — в общем KataArticle. */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import KataArticle from '../../../components/KataArticle.astro';
+import { katas } from '../../../data/katas';
+
+export function getStaticPaths() {
+  return katas.map((kata) => ({ params: { slug: kata.slug }, props: { kata } }));
+}
+
+const { kata } = Astro.props;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: kata.title.ru,
+    description: kata.brief.ru.replace(/`/g, ''),
+    tableOfContents: false,
+  }}
+>
+  <KataArticle kata={kata} lang="ru" />
+</StarlightPage>

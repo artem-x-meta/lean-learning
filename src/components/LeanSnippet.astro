@@ -14,9 +14,8 @@
  *
  * Маркеры в сниппет не попадают.
  */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { langFromPath, t } from '../lib/i18n';
+import { readLeanFile, extractRegion, extractImports, playgroundUrl } from '../lib/leanRegions';
 import LeanRunner from './LeanRunner';
 
 interface Props {
@@ -33,28 +32,13 @@ interface Props {
 const { file, region, title, playground = true } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 
-const source = readFileSync(join(process.cwd(), 'lean', file), 'utf8');
-
-function extractRegion(text: string, name: string): string {
-  const lines = text.split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim() === `-- BEGIN: ${name}`);
-  const end = lines.findIndex((line) => line.trim() === `-- END: ${name}`);
-  if (start === -1 || end === -1 || end < start) {
-    throw new Error(`LeanSnippet: region "${name}" not found in lean/${file}`);
-  }
-  return lines.slice(start + 1, end).join('\n').replace(/\s+$/, '');
-}
-
-const code = region ? extractRegion(source, region) : source.trim();
+const source = readLeanFile(file);
+const code = region ? extractRegion(source, region, file) : source.trim();
 
 // Песочнице нужны импорты: внутри куска их обычно нет, берём из шапки файла.
-const imports = source
-  .split(/\r?\n/)
-  .filter((line) => line.startsWith('import '))
-  .join('\n');
-
+const imports = extractImports(source);
 const playgroundCode = imports && !code.startsWith('import') ? `${imports}\n\n${code}` : code;
-const playgroundUrl = `https://live.lean-lang.org/#code=${encodeURIComponent(playgroundCode)}`;
+const url = playgroundUrl(playgroundCode);
 ---
 
 <figure class="dm-lean-snippet not-content">
@@ -64,7 +48,7 @@ const playgroundUrl = `https://live.lean-lang.org/#code=${encodeURIComponent(pla
   <LeanRunner client:visible code={playgroundCode} lang={lang} />
 
   {playground && (
-    <a class="dm-lean-snippet__playground" href={playgroundUrl} target="_blank" rel="noopener">
+    <a class="dm-lean-snippet__playground" href={url} target="_blank" rel="noopener">
       {t(lang, 'playground')} <span aria-hidden="true">↗</span>
     </a>
   )}

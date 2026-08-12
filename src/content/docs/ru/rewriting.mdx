@@ -9,6 +9,7 @@ import Concept from '../../../components/Concept.astro';
 import LeanSnippet from '../../../components/LeanSnippet.astro';
 import QuickCheck from '../../../components/QuickCheck';
 import LessonComplete from '../../../components/LessonComplete';
+import ChapterKatas from '../../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Глава 1" time="45–55 минут" level="База" prerequisites="кванторы, intro и exact, чтение цели в песочнице" />
 
@@ -121,5 +122,7 @@ import LessonComplete from '../../../components/LessonComplete';
 - Тождество и уравнение — разные вещи: `ring` не пользуется гипотезами, для них нужны другие тактики.
 
 Дальше — числа: решатели, которые проверяют конкретные утверждения вычислением, и то, как Lean обращается с делимостью.
+
+<ChapterKatas chapter="rewriting" />
 
 <LessonComplete client:visible lang="ru" lessonId="lean-rewriting" />

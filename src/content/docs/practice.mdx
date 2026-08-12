@@ -1,0 +1,37 @@
+---
+title: Practice
+description: Fourteen katas with the proof removed. Fill the hole yourself — and, on your own machine, have your own Lean say whether you did.
+tableOfContents: false
+---
+
+import KataList from '../../components/KataList';
+import { kataItems } from '../../data/katas';
+
+Reading a proof and writing one are different skills, and the chapters only train the first. Here every statement arrives with its proof replaced by `sorry` — a hole Lean accepts under protest. Your job is to remove it.
+
+Nothing is asked that a chapter has not already given you. The order is the order of the ladder, and each kata says which chapter it follows from, so a task you cannot start is a chapter worth rereading rather than a puzzle worth staring at.
+
+## Who decides you are right
+
+That depends on where you are reading this.
+
+**Here, on the published site,** there is no Lean — a static page cannot compile anything. The editor is still useful: it carries your draft to the official playground, which does compile. The tick is then yours to set, honestly, by hand.
+
+**On your own machine** the course can check you for real. Run it with the checker alongside:
+
+```sh
+npm run dev    # the site
+npm run lean   # the checker, in a second terminal
+```
+
+The page finds the checker by itself, a **Compile** button appears, and the verdict comes from your Lean and your Mathlib. Solve it and the tick is set by the machine, not by you.
+
+A proof that still contains `sorry` is reported as unsolved. That is not pedantry — a hole is exactly what you were asked to remove.
+
+## Fair play
+
+You could delete the statement and prove something easier; the checker would honestly report that it compiles. So the page keeps the statement it handed you and says so when the draft no longer contains it. Editing your proof is the whole point; editing the question is not.
+
+The reference solutions are not prose either. They live in the same Lean project and are compiled by CI, which means no kata here can be unsolvable — an unprovable one would fail the build before you ever saw it.
+
+<KataList client:load items={kataItems('en')} lang="en" />

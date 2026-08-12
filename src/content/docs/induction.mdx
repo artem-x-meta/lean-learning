@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="50–60 min" level="Base" prerequisites="calc and ring, the decide and omega solvers, quantifiers" />
 
@@ -116,5 +117,7 @@ The sum of the first $n$ odd numbers is $n^2$. A pretty fact, shown at school wi
 - Recursion and induction are one construction: both work because the argument gets smaller.
 
 Next come inequalities: solvers that reach where `omega` cannot, squares included.
+
+<ChapterKatas chapter="induction" />
 
 <LessonComplete client:visible lessonId="lean-induction" />

@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="quantifiers, intro and exact, reading the goal in the playground" />
 
@@ -120,5 +121,7 @@ An **equation** is a condition on an unknown: $x + 3 = 10$. It does not hold alw
 - An identity and an equation are different animals: `ring` ignores hypotheses, so equations need other tactics.
 
 Next come the numbers: solvers that settle concrete statements by computation, and the way Lean handles divisibility.
+
+<ChapterKatas chapter="rewriting" />
 
 <LessonComplete client:visible lessonId="lean-rewriting" />

@@ -9,6 +9,7 @@ import Concept from '../../components/Concept.astro';
 import LeanSnippet from '../../components/LeanSnippet.astro';
 import QuickCheck from '../../components/QuickCheck';
 import LessonComplete from '../../components/LessonComplete';
+import ChapterKatas from '../../components/ChapterKatas.astro';
 
 <LessonMeta grade="Lean · Chapter 1" time="45–55 min" level="Base" prerequisites="statements as types, proofs as values, intro and exact" />
 
@@ -135,5 +136,7 @@ De Morgan's law: if “$A$ or $B$” is false, then both are false. All three te
 - Anything follows from a contradiction, but you only reach a contradiction when the assumptions are mutually exclusive.
 
 Next come the quantifiers: "for all" will turn out to be a familiar function, and "there exists" will demand an actual example.
+
+<ChapterKatas chapter="connectives" />
 
 <LessonComplete client:visible lessonId="lean-connectives" />
