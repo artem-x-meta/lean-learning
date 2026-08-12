@@ -745,3 +745,58 @@ fieldset.dm-geometry-challenge > .dm-button {
 .dm-lean-snippet__playground:hover {
   background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-violet-soft));
 }
+
+/* ── Local Lean: the editor that appears when a checker is running ──────── */
+
+.dm-lean-runner {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-top: 1px solid var(--dm-line);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.dm-lean-runner__label {
+  color: var(--dm-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dm-lean-runner__editor {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--dm-line);
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-surface);
+  color: var(--dm-ink);
+  font-family: var(--sl-font-mono, monospace);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+  tab-size: 2;
+}
+
+.dm-lean-runner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Lean's own diagnostics: long lines scroll inside the block, not the page. */
+.dm-lean-runner__verdict pre {
+  margin: 0.5rem 0 0;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.dm-lean-runner__verdict[data-status='ok'] strong {
+  color: var(--dm-algebra-positive, seagreen);
+}
+
+.dm-lean-runner__verdict[data-status='fail'] strong {
+  color: var(--dm-coral, crimson);
+}

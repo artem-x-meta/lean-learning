@@ -32,6 +32,13 @@ export const ui = {
     completeAskHint: 'Mark your progress — no account needed.',
     completeButtonDone: '✓ Done',
     completeButton: 'Mark as done',
+    runnerTitle: 'Local Lean — edit and compile right here',
+    runnerCheck: 'Compile',
+    runnerChecking: 'Compiling…',
+    runnerReset: 'Reset',
+    runnerOk: 'Compiles.',
+    runnerFail: 'Does not compile.',
+    runnerSorry: 'Still contains sorry.',
   },
   ru: {
     goalsTitle: 'После главы ты сможешь',
@@ -49,6 +56,13 @@ export const ui = {
     completeAskHint: 'Отметь прогресс — регистрация не нужна.',
     completeButtonDone: '✓ Пройдено',
     completeButton: 'Отметить пройденной',
+    runnerTitle: 'Локальный Lean — правь и компилируй прямо здесь',
+    runnerCheck: 'Скомпилировать',
+    runnerChecking: 'Компилирую…',
+    runnerReset: 'Вернуть исходное',
+    runnerOk: 'Компилируется.',
+    runnerFail: 'Не компилируется.',
+    runnerSorry: 'Внутри остался sorry.',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 

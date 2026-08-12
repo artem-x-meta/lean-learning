@@ -37,6 +37,23 @@ npm run dev
 
 The site is bilingual: English at the root, Russian under `/ru/`. Interface strings live in `src/lib/i18n.ts`; Astro components resolve the language from the URL, React islands take it as a prop.
 
+## Two modes
+
+**Published site.** Static, no Lean anywhere: each snippet links out to the playground. That is what GitHub Pages serves and it needs nothing from the reader.
+
+**Your own machine.** Run the checker alongside the site and the same pages gain an editor that compiles with *your* Lean and *your* Mathlib:
+
+```sh
+npm run dev    # the site
+npm run lean   # the checker, in a second terminal
+```
+
+The page pings the checker on load. If it does not answer — which is the normal case on the published site — nothing appears and the playground link stays. So both modes are the same pages, with no separate build.
+
+A proof containing `sorry` is reported as unsolved, not as compiling. That distinction is what makes the local mode a check rather than a convenience.
+
+> The checker executes arbitrary Lean code, and Lean can do IO. It binds to `127.0.0.1` deliberately. Do not put it on a network you do not control.
+
 ## The Lean project
 
 ```sh

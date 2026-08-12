@@ -17,6 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { langFromPath, t } from '../lib/i18n';
+import LeanRunner from './LeanRunner';
 
 interface Props {
   /** Путь внутри каталога lean/, например 'DiveLean/Ch01/Basics.lean'. */
@@ -59,6 +60,9 @@ const playgroundUrl = `https://live.lean-lang.org/#code=${encodeURIComponent(pla
 <figure class="dm-lean-snippet not-content">
   {title && <figcaption class="dm-lean-snippet__title">{title}</figcaption>}
   <pre class="dm-lean-snippet__code"><code>{code}</code></pre>
+  {/* Appears only when the local checker from `npm run lean` answers. */}
+  <LeanRunner client:visible code={playgroundCode} lang={lang} />
+
   {playground && (
     <a class="dm-lean-snippet__playground" href={playgroundUrl} target="_blank" rel="noopener">
       {t(lang, 'playground')} <span aria-hidden="true">↗</span>
