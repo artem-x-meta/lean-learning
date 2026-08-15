@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import starlight from '@astrojs/starlight';
@@ -78,8 +79,22 @@ export default defineConfig({
   },
   vite: {
     resolve: {
+      // Matches the `@/*` path in tsconfig.json. Built with fileURLToPath and
+      // not `new URL(...).pathname`, which on Windows yields `/C:/Users/...`.
       alias: {
-        '@': new URL('./src', import.meta.url).pathname,
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+    server: {
+      // `lean/.lake` holds the compiled Mathlib: so many files that simply
+      // listing them takes minutes. The dev server watches the project and
+      // would sit there enumerating it forever — `astro dev` never became
+      // ready, while `astro build`, which watches nothing, was unaffected.
+      //
+      // The rest of `lean/` stays watched on purpose: snippets are read from
+      // those files, so editing a proof should refresh the page.
+      watch: {
+        ignored: ['**/lean/.lake', '**/lean/.lake/**'],
       },
     },
   },
